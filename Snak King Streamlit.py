@@ -227,13 +227,26 @@ def create_flavor_performance(data, product_name):
         'Dollars/TDP': 'mean'
     }).reset_index()
     
+    # Remove rows where Yago is 0 or NaN (would cause infinity/NaN in growth calc)
+    flavor_analysis = flavor_analysis[
+        (flavor_analysis['Dollars, Yago'] > 0) & 
+        (flavor_analysis['Dollars, Yago'].notna())
+    ]
+    
     # Filter out very small flavors
     flavor_analysis = flavor_analysis[flavor_analysis['Dollars'] > 1000000]  # >$1M revenue
     
+    # Calculate YoY with safe division
     flavor_analysis['YoY_%'] = (
         (flavor_analysis['Dollars'] - flavor_analysis['Dollars, Yago']) / 
         flavor_analysis['Dollars, Yago'] * 100
     )
+    
+    # Remove any infinite or NaN values that might still appear
+    flavor_analysis = flavor_analysis[
+        (flavor_analysis['YoY_%'].notna()) & 
+        (~flavor_analysis['YoY_%'].isin([float('inf'), float('-inf')]))
+    ]
     
     flavor_analysis['Velocity_K'] = flavor_analysis['Dollars/TDP'] / 1000
     flavor_analysis['Revenue_M'] = flavor_analysis['Dollars'] / 1_000_000
@@ -407,13 +420,26 @@ def create_size_performance(data, product_name):
         'Dollars/TDP': 'mean'
     }).reset_index()
     
+    # Remove rows where Yago is 0 or NaN (would cause infinity/NaN in growth calc)
+    size_analysis = size_analysis[
+        (size_analysis['Dollars, Yago'] > 0) & 
+        (size_analysis['Dollars, Yago'].notna())
+    ]
+    
     # Filter out very small sizes
     size_analysis = size_analysis[size_analysis['Dollars'] > 5000000]  # >$5M revenue
     
+    # Calculate YoY with safe division
     size_analysis['YoY_%'] = (
         (size_analysis['Dollars'] - size_analysis['Dollars, Yago']) / 
         size_analysis['Dollars, Yago'] * 100
     )
+    
+    # Remove any infinite or NaN values that might still appear
+    size_analysis = size_analysis[
+        (size_analysis['YoY_%'].notna()) & 
+        (~size_analysis['YoY_%'].isin([float('inf'), float('-inf')]))
+    ]
     
     size_analysis['Velocity_K'] = size_analysis['Dollars/TDP'] / 1000
     size_analysis['Revenue_M'] = size_analysis['Dollars'] / 1_000_000
