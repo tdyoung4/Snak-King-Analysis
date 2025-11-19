@@ -550,7 +550,7 @@ def create_size_performance(data, product_name):
             ),
             text=growing['Size_Group'],
             textposition='middle center',
-            textfont=dict(size=12, color='white', family='Arial Black'),
+            textfont=dict(size=12, color='black', family='Arial Black'),
             hovertemplate='<b>%{text}</b><br>' +
                           'Velocity: $%{x:,.0f}/TDP<br>' +
                           'Growth: %{y:.1f}%<br>' +
@@ -577,7 +577,7 @@ def create_size_performance(data, product_name):
             ),
             text=declining['Size_Group'],
             textposition='middle center',
-            textfont=dict(size=12, color='white', family='Arial Black'),
+            textfont=dict(size=12, color='black', family='Arial Black'),
             hovertemplate='<b>%{text}</b><br>' +
                           'Velocity: $%{x:,.0f}/TDP<br>' +
                           'Growth: %{y:.1f}%<br>' +
@@ -820,27 +820,91 @@ else:
     # Product Recommendation Card
     st.markdown("## 🎯 Recommended Product Specifications")
     
-    st.markdown(f"""
-    <div class="product-card">
-        <h3>{emoji} Snak King {product_name}</h3>
-        <br>
-        <h4>Product Attributes:</h4>
-        <ul>
-            <li>📦 <b>Package Size:</b> TBD (Based on size performance analysis)</li>
-            <li>🎨 <b>Flavor Profile:</b> TBD (Based on flavor opportunity matrix)</li>
-            <li>💰 <b>Price Point:</b> TBD (Premium or Value positioning)</li>
-            <li>🏷️ <b>Key Features:</b> TBD (Non-GMO, Gluten-Free, etc.)</li>
-        </ul>
-        <br>
-        <h4>Target Retailer:</h4>
-        <p><b>TBD</b> (Based on retailer growth and opportunity analysis)</p>
-        <br>
-        <h4>Why This Works:</h4>
-        <ul>
-            <li>✅ Aligns with high-growth flavor trends</li>
-            <li>✅ Targets optimal price tier based on market dynamics</li>
-            <li>✅ Positioned for retailer success (high velocity potential)</li>
-            <li>✅ Fills identified market white space</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
+    # Specific recommendations based on product
+    if product_name == "Popcorn":
+        st.markdown(f"""
+        <div class="product-card">
+            <h3>{emoji} Snak King Premium Butter Popcorn</h3>
+            <p style="color: #7f8c8d; font-style: italic;">Positioned as a premium, better-for-you alternative competing with SkinnyPop</p>
+            <br>
+            <h4>Product Attributes:</h4>
+            <ul>
+                <li>📦 <b>Package Size:</b> 12+ oz (Family/Multi-serve format)</li>
+                <li>🎨 <b>Flavor Profile:</b> Rich Butter (Classic, crowd-pleasing flavor)</li>
+                <li>💰 <b>Price Point:</b> Premium Tier ($5.99-$7.99) - positioned as high-end brand</li>
+                <li>🏷️ <b>Key Features:</b> Non-GMO, Gluten-Free, Whole Grain, Air-Popped, Simple Ingredients</li>
+                <li>🌟 <b>Positioning:</b> "Better-for-You Premium Snacking"</li>
+            </ul>
+            <br>
+            <h4>Target Retailer:</h4>
+            <p><b>Target</b> - Perfect fit for health-conscious, premium-seeking Target shoppers</p>
+            <br>
+            <h4>Why This Works:</h4>
+            <ul>
+                <li>✅ <b>12+ oz size showing 24% growth</b> - highest growth segment in popcorn</li>
+                <li>✅ <b>Butter flavor dominates</b> - proven winner with mass appeal</li>
+                <li>✅ <b>Premium positioning outperforming</b> - data shows premium growing faster than value</li>
+                <li>✅ <b>Target's demographics align</b> - health-conscious, willing to pay for quality</li>
+                <li>✅ <b>Competes with SkinnyPop</b> - established premium popcorn category leader</li>
+                <li>✅ <b>Family size captures share</b> - larger formats have higher velocity at Target</li>
+            </ul>
+            <br>
+            <h4>Go-to-Market Strategy:</h4>
+            <ul>
+                <li>🎯 Launch exclusively at Target to build brand prestige</li>
+                <li>📍 Position in "Better-For-You" snack section near SkinnyPop</li>
+                <li>💡 Emphasize simple ingredients and air-popped preparation</li>
+                <li>🎨 Premium packaging with clear window to show product quality</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+    elif product_name == "Tortilla Chips":
+        st.markdown(f"""
+        <div class="product-card">
+            <h3>{emoji} Snak King {product_name}</h3>
+            <br>
+            <h4>Product Attributes:</h4>
+            <ul>
+                <li>📦 <b>Package Size:</b> Based on size performance analysis (recommend 8-12 oz)</li>
+                <li>🎨 <b>Flavor Profile:</b> Based on flavor opportunity matrix (consider Lime, Spicy, or Sea Salt)</li>
+                <li>💰 <b>Price Point:</b> Mid-Premium positioning ($3.99-$4.99)</li>
+                <li>🏷️ <b>Key Features:</b> Stone-Ground Corn, Non-GMO, Gluten-Free, Restaurant-Style</li>
+            </ul>
+            <br>
+            <h4>Target Retailer:</h4>
+            <p><b>Analysis Recommended</b> - Consider retailers with growing tortilla chip sales</p>
+            <br>
+            <h4>Why This Works:</h4>
+            <ul>
+                <li>✅ Aligns with high-growth flavor trends in category</li>
+                <li>✅ Targets optimal price tier based on market dynamics</li>
+                <li>✅ Positioned for retailer success (high velocity potential)</li>
+                <li>✅ Fills identified market white space</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+    else:  # Variety Snack Packs
+        st.markdown(f"""
+        <div class="product-card">
+            <h3>{emoji} Snak King {product_name}</h3>
+            <br>
+            <h4>Product Attributes:</h4>
+            <ul>
+                <li>📦 <b>Package Size:</b> Multi-pack format (20-30 individual bags)</li>
+                <li>🎨 <b>Flavor Profile:</b> Mix of popular flavors (Classic, BBQ, Sour Cream & Onion)</li>
+                <li>💰 <b>Price Point:</b> Value-focused for multi-pack ($8.99-$12.99)</li>
+                <li>🏷️ <b>Key Features:</b> Portion-controlled, Variety, Convenient for lunch boxes & snacking</li>
+            </ul>
+            <br>
+            <h4>Target Retailer:</h4>
+            <p><b>Warehouse clubs & Value retailers</b> - Costco, Sam's Club, Walmart</p>
+            <br>
+            <h4>Why This Works:</h4>
+            <ul>
+                <li>✅ Variety packs appeal to families seeking convenience</li>
+                <li>✅ Portion control aligns with health-conscious trends</li>
+                <li>✅ Value positioning for bulk purchase</li>
+                <li>✅ Multiple flavors reduce purchase risk</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
