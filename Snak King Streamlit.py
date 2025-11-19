@@ -543,7 +543,7 @@ def create_size_performance(data, product_name):
             marker=dict(
                 size=growing['Revenue_M'],
                 sizemode='diameter',
-                sizeref=max(size_analysis['Revenue_M']) / 20,  # Much larger bubbles (was 60)
+                sizeref=max(size_analysis['Revenue_M']) / 15,  # Even larger bubbles (was 20)
                 color='#27AE60',
                 line=dict(width=3, color='white'),
                 opacity=0.85
@@ -570,7 +570,7 @@ def create_size_performance(data, product_name):
             marker=dict(
                 size=declining['Revenue_M'],
                 sizemode='diameter',
-                sizeref=max(size_analysis['Revenue_M']) / 20,  # Much larger bubbles (was 60)
+                sizeref=max(size_analysis['Revenue_M']) / 15,  # Even larger bubbles (was 20)
                 color='#E74C3C',
                 line=dict(width=3, color='white'),
                 opacity=0.85
@@ -720,8 +720,20 @@ if page == "🏠 Home":
     # Single opportunity matrix
     st.plotly_chart(create_opportunity_matrix(df, " - OVERALL MARKET"), use_container_width=True)
     
+    # Market Opportunity Equation
+    st.markdown("""
+    <div style='text-align: center; padding: 20px; background-color: #f8f9fa; border-radius: 10px; margin: 20px 0;'>
+        <h4 style='color: #2C3E50; margin-bottom: 10px;'>Market Opportunity Framework</h4>
+        <p style='font-size: 18px; color: #34495E; font-family: monospace;'>
+            <b>Opportunity = Growth × Velocity × Market Size</b>
+        </p>
+        <p style='font-size: 14px; color: #7f8c8d; margin-top: 10px;'>
+            Where: <b>Growth</b> = YoY % | <b>Velocity</b> = $/TDP | <b>Market Size</b> = Revenue $
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
     # Additional Visualizations Section
-    st.markdown("---")
     st.markdown("### 📊 Additional Market Insights")
     
     col1, col2 = st.columns(2)
@@ -749,19 +761,6 @@ if page == "🏠 Home":
             </a>
         </div>
         """, unsafe_allow_html=True)
-    
-    st.markdown("---")
-    st.markdown("""
-    <div style='text-align: center; padding: 20px; background-color: #f8f9fa; border-radius: 10px; margin: 20px 0;'>
-        <h4 style='color: #2C3E50; margin-bottom: 10px;'>Market Opportunity Framework</h4>
-        <p style='font-size: 18px; color: #34495E; font-family: monospace;'>
-            <b>Opportunity = Growth × Velocity × Market Size</b>
-        </p>
-        <p style='font-size: 14px; color: #7f8c8d; margin-top: 10px;'>
-            Where: <b>Growth</b> = YoY % | <b>Velocity</b> = $/TDP | <b>Market Size</b> = Revenue $
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
     
     st.markdown("---")
 
