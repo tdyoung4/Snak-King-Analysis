@@ -148,7 +148,7 @@ else:
     fig2.write_html('/mnt/user-data/outputs/snak_king_growth_by_category.html')
     print(f"✅ Saved: snak_king_growth_by_category.html")
     
-    # Graph 3: Velocity vs Growth Matrix
+    # Graph 3: Velocity vs Growth Matrix (UPDATED - uniform dot sizes)
     fig3 = go.Figure()
     
     fig3.add_trace(go.Scatter(
@@ -156,7 +156,7 @@ else:
         y=subcategory_breakdown['YoY_%'],
         mode='markers+text',
         marker=dict(
-            size=subcategory_breakdown['Revenue_M'] * 50,
+            size=15,
             color=colors,
             line=dict(width=2, color='white'),
             opacity=0.7
@@ -164,14 +164,15 @@ else:
         text=subcategory_breakdown['Subcategory'].str.replace('SS ', ''),
         textposition='top center',
         textfont=dict(size=10, color='#2C3E50', family='Arial Black'),
-        hovertemplate='<b>%{text}</b><br>Velocity: $%{x:.1f}k/TDP<br>Growth: %{y:.1f}%<extra></extra>'
+        hovertemplate='<b>%{text}</b><br>Velocity: $%{x:.1f}k/TDP<br>Growth: %{y:.1f}%<br>Revenue: $%{customdata:.2f}M<extra></extra>',
+        customdata=subcategory_breakdown['Revenue_M']
     ))
     
     fig3.add_hline(y=0, line_dash="dash", line_color="gray", line_width=1)
     fig3.add_vline(x=subcategory_breakdown['Velocity_K'].median(), line_dash="dash", line_color="gray", line_width=1)
     
     fig3.update_layout(
-        title='Snak King Performance Matrix<br><sub>Bubble size = Revenue | Green = Growing | Red = Declining</sub>',
+        title='Snak King Performance Matrix<br><sub>Color = Growth (Green) vs Decline (Red)</sub>',
         xaxis_title='Velocity ($/TDP in thousands)',
         yaxis_title='Year-over-Year Growth (%)',
         template='plotly_white',
