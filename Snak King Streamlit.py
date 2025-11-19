@@ -261,7 +261,7 @@ def create_flavor_performance(data, product_name):
     
     fig = go.Figure()
     
-    # Growing flavors
+    # Growing flavors - FIXED
     if len(growing) > 0:
         fig.add_trace(go.Scatter(
             x=growing['Velocity_Display'],
@@ -272,7 +272,9 @@ def create_flavor_performance(data, product_name):
                 sizemode='diameter',
                 sizeref=max(flavor_analysis['Revenue_M']) / 60,
                 color='#27AE60',
-                
+                line=dict(width=2, color='white'),
+                opacity=0.7
+            ),
             text=growing['FLAVOR'],
             textposition='top center',
             textfont=dict(size=8),
