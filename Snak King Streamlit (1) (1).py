@@ -718,7 +718,7 @@ if page == " Home":
     st.markdown('<div class="main-header"><h1 style="color: white; margin: 0;"> Snak King Product Opportunity Analyzer</h1></div>', unsafe_allow_html=True)
     
     # Single opportunity matrix
-    st.plotly_chart(create_opportunity_matrix(df, " - OVERALL MARKET"), use_container_width=True)
+    st.plotly_chart(create_opportunity_matrix(df), use_container_width=True)
     
     # Market Opportunity Equation
     st.markdown("""
