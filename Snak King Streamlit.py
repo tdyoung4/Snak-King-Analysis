@@ -536,14 +536,15 @@ def create_size_performance(data, product_name):
     
     # Growing sizes
     if len(growing) > 0:
+        # Use fixed larger sizes - map revenue to bubble size directly
+        bubble_sizes = [min(200, max(80, rev * 15)) for rev in growing['Revenue_M']]
+        
         fig.add_trace(go.Scatter(
             x=growing['Velocity_Display'],
             y=growing['YoY_%'],
             mode='markers+text',
             marker=dict(
-                size=growing['Revenue_M'] * 3,  # Triple the size values
-                sizemode='diameter',
-                sizeref=max(size_analysis['Revenue_M']) / 5,  # Much larger bubbles (was 15)
+                size=bubble_sizes,  # Fixed pixel sizes
                 color='#27AE60',
                 line=dict(width=3, color='white'),
                 opacity=0.85
@@ -563,14 +564,15 @@ def create_size_performance(data, product_name):
     
     # Declining sizes
     if len(declining) > 0:
+        # Use fixed larger sizes - map revenue to bubble size directly
+        bubble_sizes = [min(200, max(80, rev * 15)) for rev in declining['Revenue_M']]
+        
         fig.add_trace(go.Scatter(
             x=declining['Velocity_Display'],
             y=declining['YoY_%'],
             mode='markers+text',
             marker=dict(
-                size=declining['Revenue_M'] * 3,  # Triple the size values
-                sizemode='diameter',
-                sizeref=max(size_analysis['Revenue_M']) / 5,  # Much larger bubbles (was 15)
+                size=bubble_sizes,  # Fixed pixel sizes
                 color='#E74C3C',
                 line=dict(width=3, color='white'),
                 opacity=0.85
