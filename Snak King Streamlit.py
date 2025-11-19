@@ -358,7 +358,13 @@ def create_flavor_performance(data, product_name):
         height=600,
         showlegend=False,
         hovermode='closest',
-        font=dict(size=11)
+        font=dict(size=11),
+        yaxis=dict(
+            range=[flavor_analysis['YoY_%'].min() - 5, flavor_analysis['YoY_%'].max() + 5]
+        ),
+        xaxis=dict(
+            range=[flavor_analysis['Velocity_Display'].min() * 0.9, flavor_analysis['Velocity_Display'].max() * 1.1]
+        )
     )
     
     return fig
@@ -630,7 +636,13 @@ def create_size_performance(data, product_name):
         height=600,
         showlegend=False,
         hovermode='closest',
-        font=dict(size=11)
+        font=dict(size=11),
+        yaxis=dict(
+            range=[size_analysis['YoY_%'].min() - 5, size_analysis['YoY_%'].max() + 5]
+        ),
+        xaxis=dict(
+            range=[size_analysis['Velocity_Display'].min() * 0.9, size_analysis['Velocity_Display'].max() * 1.1]
+        )
     )
     
     return fig
