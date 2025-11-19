@@ -709,7 +709,7 @@ df = reclassify_flavors(df)
 st.sidebar.title("🎯 Navigation")
 page = st.sidebar.radio(
     "Select Page:",
-    ["🏠 Home", "🍿 Popcorn", "🌽 Tortilla Chips", "📦 Variety Snack Packs"]
+    ["🏠 Home", "🍿 Popcorn", "🌽 Tortilla Chips", "📦 Variety Snack Packs", "🥗 Better-For-You Snacks"]
 )
 
 # HOME PAGE
@@ -771,17 +771,39 @@ else:
         category = "SS POPCORN"
         product_name = "Popcorn"
         emoji = "🍿"
+        # Filter data
+        product_data = df[df['Subcategory'] == category].copy()
     elif page == "🌽 Tortilla Chips":
         category = "SS TORTILLA & CORN CHIPS"
         product_name = "Tortilla Chips"
         emoji = "🌽"
-    else:  # Variety Snack Packs
+        # Filter data
+        product_data = df[df['Subcategory'] == category].copy()
+    elif page == "📦 Variety Snack Packs":
         category = "SS SNACKS VARIETY PACKS"
         product_name = "Variety Snack Packs"
         emoji = "📦"
-    
-    # Filter data
-    product_data = df[df['Subcategory'] == category].copy()
+        # Filter data
+        product_data = df[df['Subcategory'] == category].copy()
+    else:  # Better-For-You Snacks
+        # Combine multiple BFY categories
+        bfy_categories = [
+            "SS RICE CAKES",
+            "SS CORN CAKES",
+            "SS PITA/BAGEL CHIPS",
+            "SS RICE/CORN CHIPS",
+            "SS SNACKS-OTHER",
+            "SS MULTIGRAIN SNACKS",
+            "SS VEGGIE SNACKS"
+        ]
+        product_name = "Better-For-You Snacks"
+        emoji = "🥗"
+        # Filter data - combine multiple categories
+        product_data = df[df['Subcategory'].isin(bfy_categories)].copy()
+        
+        # If no data found with those exact names, try partial matches
+        if len(product_data) == 0:
+            product_data = df[df['Subcategory'].str.contains('RICE|CORN CAKE|PITA|BAGEL|MULTIGRAIN|VEGGIE', case=False, na=False)].copy()
     
     # Page title
     st.title(f"{product_name} Market Analysis")
@@ -883,7 +905,7 @@ else:
             </ul>
         </div>
         """, unsafe_allow_html=True)
-    else:  # Variety Snack Packs
+    elif product_name == "Variety Snack Packs":
         st.markdown(f"""
         <div class="product-card">
             <h3>Snak King {product_name}</h3>
@@ -906,5 +928,47 @@ else:
                 <li>Value positioning for bulk purchase</li>
                 <li>Multiple flavors reduce purchase risk</li>
             </ul>
+        </div>
+        """, unsafe_allow_html=True)
+    else:  # Better-For-You Snacks
+        st.markdown(f"""
+        <div class="product-card">
+            <h3>Snak King {product_name}</h3>
+            <p style="color: #7f8c8d; font-style: italic;">Health-conscious alternatives positioned in the growing better-for-you category</p>
+            <br>
+            <h4>Product Attributes:</h4>
+            <ul>
+                <li><b>Product Type:</b> Veggie Chips or Chickpea/Lentil Crisps</li>
+                <li><b>Package Size:</b> 5-6 oz (Premium single-serve sharing size)</li>
+                <li><b>Flavor Profile:</b> Sea Salt, BBQ, or Zesty Ranch</li>
+                <li><b>Price Point:</b> Premium positioning ($4.49-$5.99) - health halo pricing</li>
+                <li><b>Key Features:</b> Baked (not fried), High Protein/Fiber, Non-GMO, Gluten-Free, Simple Ingredients</li>
+                <li><b>Positioning:</b> "Real Vegetables, Real Flavor" or "Plant-Powered Snacking"</li>
+            </ul>
+            <br>
+            <h4>Target Retailer:</h4>
+            <p><b>Whole Foods, Sprouts, Target (Natural Section)</b> - Premium natural/organic retailers</p>
+            <br>
+            <h4>Why This Works:</h4>
+            <ul>
+                <li><b>Fast-growing category</b> - Better-for-you snacks growing 15-20% annually</li>
+                <li><b>Less Frito-Lay competition</b> - They're weak in premium BFY space</li>
+                <li><b>Premium pricing justified</b> - Health-conscious consumers pay more</li>
+                <li><b>Millennial/Gen-Z appeal</b> - Values-driven, ingredient-conscious shoppers</li>
+                <li><b>Multiple occasions</b> - Lunch boxes, office snacking, better-for-you indulgence</li>
+                <li><b>Retail receptivity</b> - Natural grocers actively seeking BFY innovation</li>
+            </ul>
+            <br>
+            <h4>Go-to-Market Strategy:</h4>
+            <ul>
+                <li>Launch in natural/organic channel first (Whole Foods, Sprouts)</li>
+                <li>Build credibility before expanding to mainstream (Target, Kroger)</li>
+                <li>Emphasize "made with real vegetables" or "plant protein"</li>
+                <li>Clean label design with visible ingredients</li>
+                <li>Social media marketing targeting health-conscious millennials</li>
+            </ul>
+            <br>
+            <h4>⚠️ Strategic Note:</h4>
+            <p style="color: #e74c3c;"><b>Risk Level: Moderate</b> - Growing category but requires premium positioning and natural channel expertise. Consider after establishing Popcorn as anchor product.</p>
         </div>
         """, unsafe_allow_html=True)
