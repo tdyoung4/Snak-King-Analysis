@@ -7,7 +7,6 @@ import numpy as np
 # Page config
 st.set_page_config(
     page_title="Snak King Product Analyzer",
-    page_icon="👑",
     layout="wide"
 )
 
@@ -85,8 +84,8 @@ def reclassify_flavors(df):
     return df
 
 # Function to create opportunity matrix
-def create_opportunity_matrix(data, title_suffix=""):
-    subcategory_analysis = data.groupby('Subcategory').agg({
+def create_opportunity_matrix(, title_suffix=""):
+    subcategory_analysis = .groupby('Subcategory').agg({
         'Dollars': 'sum',
         'Dollars, Yago': 'sum',
         'Dollars/TDP': 'mean'
@@ -150,9 +149,9 @@ def create_opportunity_matrix(data, title_suffix=""):
     return fig
 
 # Slide 3: Brand Performance
-def create_brand_performance(data, product_name):
+def create_brand_performance(, product_name):
     # Aggregate by brand
-    brand_analysis = data.groupby('Brand').agg({
+    brand_analysis = .groupby('Brand').agg({
         'Dollars': 'sum',
         'Dollars/TDP': 'mean'
     }).reset_index()
@@ -219,9 +218,9 @@ def create_brand_performance(data, product_name):
     return fig
 
 # Slide 4: Flavor Performance Matrix - FIXED VERSION
-def create_flavor_performance(data, product_name):
+def create_flavor_performance(, product_name):
     # Aggregate by flavor
-    flavor_analysis = data.groupby('FLAVOR').agg({
+    flavor_analysis = .groupby('FLAVOR').agg({
         'Dollars': 'sum',
         'Dollars, Yago': 'sum',
         'Dollars/TDP': 'mean',
@@ -235,7 +234,7 @@ def create_flavor_performance(data, product_name):
     )
     
     # Calculate distribution percentage
-    total_tdp = data['TDP'].sum()
+    total_tdp = ['TDP'].sum()
     flavor_analysis['Distribution_%'] = (flavor_analysis['TDP'] / total_tdp * 100).round(0).astype(int)
     
     # Replace infinity with NaN, then drop NaN
@@ -367,21 +366,21 @@ def create_flavor_performance(data, product_name):
     return fig
 
 # Slide 5: Price Tier Analysis
-def create_price_tier_analysis(data, product_name):
+def create_price_tier_analysis(, product_name):
     # Calculate price per unit
-    data_copy = data.copy()
-    data_copy['Price_Per_Unit'] = data_copy['Dollars'] / data_copy['Units']
+    _copy = .copy()
+    _copy['Price_Per_Unit'] = _copy['Dollars'] / _copy['Units']
     
     # Define premium (top 25%) and value (bottom 25%) by price
-    price_75 = data_copy['Price_Per_Unit'].quantile(0.75)
-    price_25 = data_copy['Price_Per_Unit'].quantile(0.25)
+    price_75 = _copy['Price_Per_Unit'].quantile(0.75)
+    price_25 = _copy['Price_Per_Unit'].quantile(0.25)
     
-    data_copy['Tier'] = 'Mid-Tier'
-    data_copy.loc[data_copy['Price_Per_Unit'] >= price_75, 'Tier'] = 'Premium (Top 25% Price)'
-    data_copy.loc[data_copy['Price_Per_Unit'] <= price_25, 'Tier'] = 'Value (Bottom 25% Price)'
+    _copy['Tier'] = 'Mid-Tier'
+    _copy.loc[_copy['Price_Per_Unit'] >= price_75, 'Tier'] = 'Premium (Top 25% Price)'
+    _copy.loc[_copy['Price_Per_Unit'] <= price_25, 'Tier'] = 'Value (Bottom 25% Price)'
     
     # Aggregate by tier
-    tier_analysis = data_copy.groupby('Tier').agg({
+    tier_analysis = _copy.groupby('Tier').agg({
         'Dollars': 'sum',
         'Dollars, Yago': 'sum',
         'Dollars/TDP': 'mean',
@@ -403,13 +402,13 @@ def create_price_tier_analysis(data, product_name):
     
     fig = go.Figure()
     
-    premium_data = tier_analysis[tier_analysis['Tier'] == 'Premium (Top 25% Price)'].iloc[0]
-    value_data = tier_analysis[tier_analysis['Tier'] == 'Value (Bottom 25% Price)'].iloc[0]
+    premium_ = tier_analysis[tier_analysis['Tier'] == 'Premium (Top 25% Price)'].iloc[0]
+    value_ = tier_analysis[tier_analysis['Tier'] == 'Value (Bottom 25% Price)'].iloc[0]
     
-    premium_values = [premium_data['Revenue_M'], premium_data['YoY_%'], 
-                     premium_data['Velocity_K'], premium_data['Price_Per_Unit']]
-    value_values = [value_data['Revenue_M'], value_data['YoY_%'], 
-                   value_data['Velocity_K'], value_data['Price_Per_Unit']]
+    premium_values = [premium_['Revenue_M'], premium_['YoY_%'], 
+                     premium_['Velocity_K'], premium_['Price_Per_Unit']]
+    value_values = [value_['Revenue_M'], value_['YoY_%'], 
+                   value_['Velocity_K'], value_['Price_Per_Unit']]
     
     fig.add_trace(go.Bar(
         name='Premium (Top 25% Price)',
@@ -432,10 +431,10 @@ def create_price_tier_analysis(data, product_name):
     ))
     
     # Add annotation about premium performance
-    if premium_data['YoY_%'] > value_data['YoY_%']:
+    if premium_['YoY_%'] > value_['YoY_%']:
         annotation_text = f"Premium {product_name.lower()} is outperforming:<br>" \
-                         f"✓ Growing {premium_data['YoY_%']:.1f}% vs {value_data['YoY_%']:.1f}%<br>" \
-                         f"✓ Commands ${premium_data['Price_Per_Unit']:.2f} vs ${value_data['Price_Per_Unit']:.2f} per unit<br>" \
+                         f"✓ Growing {premium_['YoY_%']:.1f}% vs {value_['YoY_%']:.1f}%<br>" \
+                         f"✓ Commands ${premium_['Price_Per_Unit']:.2f} vs ${value_['Price_Per_Unit']:.2f} per unit<br>" \
                          f"✓ Higher velocity despite premium pricing"
         
         fig.add_annotation(
@@ -468,7 +467,7 @@ def create_price_tier_analysis(data, product_name):
     return fig
 
 # Slide 6: Package Size Performance - FIXED VERSION
-def create_size_performance(data, product_name):
+def create_size_performance(, product_name):
     # Create size groups
     def group_size(size):
         if pd.isna(size):
@@ -486,11 +485,11 @@ def create_size_performance(data, product_name):
             return '12+ oz'
     
     # Add size group column
-    data_copy = data.copy()
-    data_copy['Size_Group'] = data_copy['SIZE'].apply(group_size)
+    _copy = .copy()
+    _copy['Size_Group'] = _copy['SIZE'].apply(group_size)
     
     # Aggregate by size group
-    size_analysis = data_copy.groupby('Size_Group').agg({
+    size_analysis = _copy.groupby('Size_Group').agg({
         'Dollars': 'sum',
         'Dollars, Yago': 'sum',
         'Dollars/TDP': 'mean',
@@ -715,7 +714,7 @@ page = st.sidebar.radio(
 # HOME PAGE
 if page == "🏠 Home":
     # Title
-    st.markdown('<div class="main-header"><h1 style="color: white; margin: 0;">🎯 Snak King Product Opportunity Analyzer</h1><p style="color: white; margin: 10px 0 0 0;">Data-Driven Insights for Product Development</p></div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-header"><h1 style="color: white; margin: 0;">🎯 Snak King Product Opportunity Analyzer</h1><p style="color: white; margin: 10px 0 0 0;)
     
     # Single opportunity matrix
     st.plotly_chart(create_opportunity_matrix(df, " - OVERALL MARKET"), use_container_width=True)
