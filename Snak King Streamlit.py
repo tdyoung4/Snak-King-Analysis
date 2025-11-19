@@ -33,7 +33,7 @@ st.markdown("""
 # Load data
 @st.cache_data
 def load_data():
-    df = pd.read_excel('Salty Snack Market Data Fall 2025-1 (2).xlsx')
+    df = pd.read_excel('/Users/thomasyoung/Downloads/Salty Snack Market Data Fall 2025-1 (2).xlsx')
     df = df[df['Product Level'] == 'UPC'].copy()
     return df
 
@@ -220,33 +220,29 @@ def create_brand_performance(data, product_name):
 
 # Slide 4: Flavor Performance Matrix
 def create_flavor_performance(data, product_name):
-    # Aggregate by flavor
-    flavor_analysis = data.groupby('FLAVOR').agg({
+    # Calculate YoY at UPC level first
+    data_copy = data.copy()
+    data_copy['YoY_%_UPC'] = (
+        (data_copy['Dollars'] - data_copy['Dollars, Yago']) / 
+        data_copy['Dollars, Yago'] * 100
+    ).replace([float('inf'), float('-inf')], float('nan'))
+    
+    # Aggregate by flavor - using weighted average for YoY by revenue
+    flavor_analysis = data_copy.groupby('FLAVOR').agg({
         'Dollars': 'sum',
         'Dollars, Yago': 'sum',
-        'Dollars/TDP': 'mean'
+        'Dollars/TDP': 'mean',
+        'YoY_%_UPC': lambda x: np.average(x.dropna(), weights=data_copy.loc[x.index, 'Dollars']) if len(x.dropna()) > 0 else 0
     }).reset_index()
     
-    # Remove rows where Yago is 0 or NaN (would cause infinity/NaN in growth calc)
-    flavor_analysis = flavor_analysis[
-        (flavor_analysis['Dollars, Yago'] > 0) & 
-        (flavor_analysis['Dollars, Yago'].notna())
-    ]
+    # Rename column
+    flavor_analysis.rename(columns={'YoY_%_UPC': 'YoY_%'}, inplace=True)
     
     # Filter out very small flavors
     flavor_analysis = flavor_analysis[flavor_analysis['Dollars'] > 1000000]  # >$1M revenue
     
-    # Calculate YoY with safe division
-    flavor_analysis['YoY_%'] = (
-        (flavor_analysis['Dollars'] - flavor_analysis['Dollars, Yago']) / 
-        flavor_analysis['Dollars, Yago'] * 100
-    )
-    
-    # Remove any infinite or NaN values that might still appear
-    flavor_analysis = flavor_analysis[
-        (flavor_analysis['YoY_%'].notna()) & 
-        (~flavor_analysis['YoY_%'].isin([float('inf'), float('-inf')]))
-    ]
+    # Remove any NaN values
+    flavor_analysis = flavor_analysis[flavor_analysis['YoY_%'].notna()]
     
     flavor_analysis['Velocity_K'] = flavor_analysis['Dollars/TDP'] / 1000
     flavor_analysis['Revenue_M'] = flavor_analysis['Dollars'] / 1_000_000
@@ -413,33 +409,29 @@ def create_price_tier_analysis(data, product_name):
 
 # Slide 6: Package Size Performance
 def create_size_performance(data, product_name):
-    # Aggregate by size
-    size_analysis = data.groupby('SIZE').agg({
+    # Calculate YoY at UPC level first
+    data_copy = data.copy()
+    data_copy['YoY_%_UPC'] = (
+        (data_copy['Dollars'] - data_copy['Dollars, Yago']) / 
+        data_copy['Dollars, Yago'] * 100
+    ).replace([float('inf'), float('-inf')], float('nan'))
+    
+    # Aggregate by size - using weighted average for YoY by revenue
+    size_analysis = data_copy.groupby('SIZE').agg({
         'Dollars': 'sum',
         'Dollars, Yago': 'sum',
-        'Dollars/TDP': 'mean'
+        'Dollars/TDP': 'mean',
+        'YoY_%_UPC': lambda x: np.average(x.dropna(), weights=data_copy.loc[x.index, 'Dollars']) if len(x.dropna()) > 0 else 0
     }).reset_index()
     
-    # Remove rows where Yago is 0 or NaN (would cause infinity/NaN in growth calc)
-    size_analysis = size_analysis[
-        (size_analysis['Dollars, Yago'] > 0) & 
-        (size_analysis['Dollars, Yago'].notna())
-    ]
+    # Rename column
+    size_analysis.rename(columns={'YoY_%_UPC': 'YoY_%'}, inplace=True)
     
     # Filter out very small sizes
     size_analysis = size_analysis[size_analysis['Dollars'] > 5000000]  # >$5M revenue
     
-    # Calculate YoY with safe division
-    size_analysis['YoY_%'] = (
-        (size_analysis['Dollars'] - size_analysis['Dollars, Yago']) / 
-        size_analysis['Dollars, Yago'] * 100
-    )
-    
-    # Remove any infinite or NaN values that might still appear
-    size_analysis = size_analysis[
-        (size_analysis['YoY_%'].notna()) & 
-        (~size_analysis['YoY_%'].isin([float('inf'), float('-inf')]))
-    ]
+    # Remove any NaN values
+    size_analysis = size_analysis[size_analysis['YoY_%'].notna()]
     
     size_analysis['Velocity_K'] = size_analysis['Dollars/TDP'] / 1000
     size_analysis['Revenue_M'] = size_analysis['Dollars'] / 1_000_000
