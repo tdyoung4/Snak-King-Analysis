@@ -1,4 +1,4 @@
-import streamlit as st
+ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
@@ -270,7 +270,7 @@ def create_flavor_performance(data, product_name):
             marker=dict(
                 size=growing['Revenue_M'],
                 sizemode='diameter',
-                sizeref=max(flavor_analysis['Revenue_M']) / 60,
+                size = declining['Revenue_M'] ** 1.2,
                 color='#27AE60',
                 line=dict(width=2, color='white'),
                 opacity=0.7
