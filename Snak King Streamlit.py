@@ -543,14 +543,14 @@ def create_size_performance(data, product_name):
             marker=dict(
                 size=growing['Revenue_M'],
                 sizemode='diameter',
-                sizeref=max(size_analysis['Revenue_M']) / 60,
+                sizeref=max(size_analysis['Revenue_M']) / 20,  # Much larger bubbles (was 60)
                 color='#27AE60',
-                line=dict(width=2, color='white'),
-                opacity=0.7
+                line=dict(width=3, color='white'),
+                opacity=0.85
             ),
             text=growing['Size_Group'],
             textposition='middle center',
-            textfont=dict(size=11, color='white', family='Arial Black'),
+            textfont=dict(size=14, color='white', family='Arial Black'),
             hovertemplate='<b>%{text}</b><br>' +
                           'Velocity: $%{x:,.0f}/TDP<br>' +
                           'Growth: %{y:.1f}%<br>' +
@@ -570,14 +570,14 @@ def create_size_performance(data, product_name):
             marker=dict(
                 size=declining['Revenue_M'],
                 sizemode='diameter',
-                sizeref=max(size_analysis['Revenue_M']) / 60,
+                sizeref=max(size_analysis['Revenue_M']) / 20,  # Much larger bubbles (was 60)
                 color='#E74C3C',
-                line=dict(width=2, color='white'),
-                opacity=0.7
+                line=dict(width=3, color='white'),
+                opacity=0.85
             ),
             text=declining['Size_Group'],
             textposition='middle center',
-            textfont=dict(size=11, color='white', family='Arial Black'),
+            textfont=dict(size=14, color='white', family='Arial Black'),
             hovertemplate='<b>%{text}</b><br>' +
                           'Velocity: $%{x:,.0f}/TDP<br>' +
                           'Growth: %{y:.1f}%<br>' +
@@ -607,20 +607,20 @@ def create_size_performance(data, product_name):
             borderpad=5
         )
     
-    # Add legend annotation
+    # Add legend annotation - moved to top left
     fig.add_annotation(
-        x=0.98, y=0.02,
+        x=0.02, y=0.98,
         xref='paper', yref='paper',
         text='<b>Bubble Size = Revenue</b><br>(Market opportunity)<br><br>🟢 Growing<br>🔴 Declining',
         showarrow=False,
-        font=dict(size=10),
-        bgcolor='white',
+        font=dict(size=11),
+        bgcolor='rgba(255, 255, 255, 0.9)',
         bordercolor='black',
-        borderwidth=1,
+        borderwidth=2,
         borderpad=10,
         align='left',
-        xanchor='right',
-        yanchor='bottom'
+        xanchor='left',
+        yanchor='top'
     )
     
     fig.update_layout(
@@ -720,7 +720,37 @@ if page == "🏠 Home":
     # Single opportunity matrix
     st.plotly_chart(create_opportunity_matrix(df, " - OVERALL MARKET"), use_container_width=True)
     
-    # Market Opportunity Equation
+    # Additional Visualizations Section
+    st.markdown("---")
+    st.markdown("### 📊 Additional Market Insights")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("""
+        <div style='padding: 20px; background-color: #f8f9fa; border-radius: 10px; text-align: center;'>
+            <h4 style='color: #2C3E50; margin-bottom: 15px;'>Interactive Market Analysis</h4>
+            <a href='https://flourish-user-preview.com/26318359/cacs0E7-Y07zdRmWo8cMDlizk5uERwfH7-At41IGoTJOBwzq4kxPjBEhAMYc-trN/' target='_blank' style='text-decoration: none;'>
+                <button style='background-color: #3498db; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold;'>
+                    View Visualization 1 →
+                </button>
+            </a>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("""
+        <div style='padding: 20px; background-color: #f8f9fa; border-radius: 10px; text-align: center;'>
+            <h4 style='color: #2C3E50; margin-bottom: 15px;'>Market Trends Dashboard</h4>
+            <a href='https://public.flourish.studio/visualisation/26298160/' target='_blank' style='text-decoration: none;'>
+                <button style='background-color: #3498db; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold;'>
+                    View Visualization 2 →
+                </button>
+            </a>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    st.markdown("---")
     st.markdown("""
     <div style='text-align: center; padding: 20px; background-color: #f8f9fa; border-radius: 10px; margin: 20px 0;'>
         <h4 style='color: #2C3E50; margin-bottom: 10px;'>Market Opportunity Framework</h4>
@@ -734,7 +764,6 @@ if page == "🏠 Home":
     """, unsafe_allow_html=True)
     
     st.markdown("---")
-    st.info("👈 Use the sidebar to explore detailed analysis for each product category")
 
 # PRODUCT PAGES
 else:
@@ -816,6 +845,3 @@ else:
         </ul>
     </div>
     """, unsafe_allow_html=True)
-
-st.sidebar.markdown("---")
-st.sidebar.markdown("**Built with Streamlit**  \n📊 Data Analysis by Tom  \n🎓 Pepperdine MSBA '26")
