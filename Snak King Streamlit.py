@@ -33,7 +33,7 @@ st.markdown("""
 # Load data
 @st.cache_data
 def load_data():
-    df = pd.read_excel('/Users/thomasyoung/Downloads/Salty Snack Market Data Fall 2025-1 (2).xlsx')
+    df = pd.read_excel('Salty Snack Market Data Fall 2025-1 (2).xlsx')
     df = df[df['Product Level'] == 'UPC'].copy()
     return df
 
