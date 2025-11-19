@@ -268,7 +268,6 @@ def create_flavor_performance(data, product_name):
             y=growing['YoY_%'],
             mode='markers+text',
             marker=dict(
-                size=growing['Revenue_M'],
                 sizemode='diameter',
                 size = declining['Revenue_M'] ** 1.2,
                 color='#27AE60',
