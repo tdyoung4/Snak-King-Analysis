@@ -542,13 +542,15 @@ def create_size_performance(data, product_name):
             mode='markers+text',
             marker=dict(
                 size=growing['Revenue_M'],
+                sizemode='diameter',
+                sizeref=max(size_analysis['Revenue_M']) / 60,
                 color='#27AE60',
                 line=dict(width=2, color='white'),
-                opacity=0.8
+                opacity=0.7
             ),
             text=growing['Size_Group'],
             textposition='middle center',
-            textfont=dict(size=12, color='white', family='Arial Black'),
+            textfont=dict(size=11, color='white', family='Arial Black'),
             hovertemplate='<b>%{text}</b><br>' +
                           'Velocity: $%{x:,.0f}/TDP<br>' +
                           'Growth: %{y:.1f}%<br>' +
@@ -567,13 +569,15 @@ def create_size_performance(data, product_name):
             mode='markers+text',
             marker=dict(
                 size=declining['Revenue_M'],
+                sizemode='diameter',
+                sizeref=max(size_analysis['Revenue_M']) / 60,
                 color='#E74C3C',
                 line=dict(width=2, color='white'),
-                opacity=0.8
+                opacity=0.7
             ),
             text=declining['Size_Group'],
             textposition='middle center',
-            textfont=dict(size=12, color='white', family='Arial Black'),
+            textfont=dict(size=11, color='white', family='Arial Black'),
             hovertemplate='<b>%{text}</b><br>' +
                           'Velocity: $%{x:,.0f}/TDP<br>' +
                           'Growth: %{y:.1f}%<br>' +
