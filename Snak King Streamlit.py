@@ -541,10 +541,9 @@ def create_size_performance(data, product_name):
             y=growing['YoY_%'],
             mode='markers+text',
             marker=dict(
-                size=growing['Revenue_M'],
+                size=growing['Revenue_M'] * 10,  # Multiply for better visibility
                 sizemode='diameter',
-                sizeref=max(size_analysis['Revenue_M']) / 40,  # Balanced size
-                sizemin=40,
+                sizeref=2,  # Fixed sizeref for consistent scaling
                 color='#27AE60',
                 line=dict(width=3, color='white'),
                 opacity=0.85
@@ -569,10 +568,9 @@ def create_size_performance(data, product_name):
             y=declining['YoY_%'],
             mode='markers+text',
             marker=dict(
-                size=declining['Revenue_M'],
+                size=declining['Revenue_M'] * 10,  # Multiply for better visibility
                 sizemode='diameter',
-                sizeref=max(size_analysis['Revenue_M']) / 40,  # Balanced size
-                sizemin=40,
+                sizeref=2,  # Fixed sizeref for consistent scaling
                 color='#E74C3C',
                 line=dict(width=3, color='white'),
                 opacity=0.85
@@ -609,9 +607,9 @@ def create_size_performance(data, product_name):
             borderpad=5
         )
     
-    # Add legend annotation - moved to top left
+    # Add legend annotation - moved to top right
     fig.add_annotation(
-        x=0.02, y=0.98,
+        x=0.98, y=0.98,
         xref='paper', yref='paper',
         text='<b>Bubble Size = Revenue</b><br>(Market opportunity)<br><br>🟢 Growing<br>🔴 Declining',
         showarrow=False,
@@ -621,7 +619,7 @@ def create_size_performance(data, product_name):
         borderwidth=2,
         borderpad=10,
         align='left',
-        xanchor='left',
+        xanchor='right',
         yanchor='top'
     )
     
