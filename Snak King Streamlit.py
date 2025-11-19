@@ -841,12 +841,12 @@ else:
             <br>
             <h4>Why This Works:</h4>
             <ul>
-                <li>✅ <b>12+ oz size showing 24% growth</b> - highest growth segment in popcorn</li>
-                <li>✅ <b>Butter flavor dominates</b> - proven winner with mass appeal</li>
-                <li>✅ <b>Premium positioning outperforming</b> - data shows premium growing faster than value</li>
-                <li>✅ <b>Target's demographics align</b> - health-conscious, willing to pay for quality</li>
-                <li>✅ <b>Competes with SkinnyPop</b> - established premium popcorn category leader</li>
-                <li>✅ <b>Family size captures share</b> - larger formats have higher velocity at Target</li>
+                <li><b>12+ oz size showing 24% growth</b> - highest growth segment in popcorn</li>
+                <li><b>Butter flavor dominates</b> - proven winner with mass appeal</li>
+                <li><b>Premium positioning outperforming</b> - data shows premium growing faster than value</li>
+                <li><b>Target's demographics align</b> - health-conscious, willing to pay for quality</li>
+                <li><b>Competes with SkinnyPop</b> - established premium popcorn category leader</li>
+                <li><b>Family size captures share</b> - larger formats have higher velocity at Target</li>
             </ul>
             <br>
             <h4>Go-to-Market Strategy:</h4>
@@ -876,10 +876,10 @@ else:
             <br>
             <h4>Why This Works:</h4>
             <ul>
-                <li>✅ Aligns with high-growth flavor trends in category</li>
-                <li>✅ Targets optimal price tier based on market dynamics</li>
-                <li>✅ Positioned for retailer success (high velocity potential)</li>
-                <li>✅ Fills identified market white space</li>
+                <li>Aligns with high-growth flavor trends in category</li>
+                <li>Targets optimal price tier based on market dynamics</li>
+                <li>Positioned for retailer success (high velocity potential)</li>
+                <li>Fills identified market white space</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
@@ -901,10 +901,10 @@ else:
             <br>
             <h4>Why This Works:</h4>
             <ul>
-                <li>✅ Variety packs appeal to families seeking convenience</li>
-                <li>✅ Portion control aligns with health-conscious trends</li>
-                <li>✅ Value positioning for bulk purchase</li>
-                <li>✅ Multiple flavors reduce purchase risk</li>
+                <li>Variety packs appeal to families seeking convenience</li>
+                <li>Portion control aligns with health-conscious trends</li>
+                <li>Value positioning for bulk purchase</li>
+                <li>Multiple flavors reduce purchase risk</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
