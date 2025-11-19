@@ -33,7 +33,7 @@ st.markdown("""
 # Load data
 @st.cache_data
 def load_data():
-    df = pd.read_excel('Salty Snack Market Data Fall 2025-1 (2).xlsx')
+    df = pd.read_excel('/Users/thomasyoung/Downloads/Salty Snack Market Data Fall 2025-1 (2).xlsx')
     df = df[df['Product Level'] == 'UPC'].copy()
     return df
 
@@ -358,13 +358,7 @@ def create_flavor_performance(data, product_name):
         height=600,
         showlegend=False,
         hovermode='closest',
-        font=dict(size=11),
-        yaxis=dict(
-            range=[flavor_analysis['YoY_%'].min() - 5, flavor_analysis['YoY_%'].max() + 5]
-        ),
-        xaxis=dict(
-            range=[flavor_analysis['Velocity_Display'].min() * 0.9, flavor_analysis['Velocity_Display'].max() * 1.1]
-        )
+        font=dict(size=11)
     )
     
     return fig
@@ -636,13 +630,7 @@ def create_size_performance(data, product_name):
         height=600,
         showlegend=False,
         hovermode='closest',
-        font=dict(size=11),
-        yaxis=dict(
-            range=[size_analysis['YoY_%'].min() - 5, size_analysis['YoY_%'].max() + 5]
-        ),
-        xaxis=dict(
-            range=[size_analysis['Velocity_Display'].min() * 0.9, size_analysis['Velocity_Display'].max() * 1.1]
-        )
+        font=dict(size=11)
     )
     
     return fig
