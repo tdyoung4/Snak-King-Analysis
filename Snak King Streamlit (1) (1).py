@@ -7,7 +7,7 @@ import numpy as np
 # Page config
 st.set_page_config(
     page_title="Snak King Product Analyzer",
-    page_icon="👑",
+    page_icon="",
     layout="wide"
 )
 
@@ -434,9 +434,9 @@ def create_price_tier_analysis(data, product_name):
     # Add annotation about premium performance
     if premium_data['YoY_%'] > value_data['YoY_%']:
         annotation_text = f"Premium {product_name.lower()} is outperforming:<br>" \
-                         f"✓ Growing {premium_data['YoY_%']:.1f}% vs {value_data['YoY_%']:.1f}%<br>" \
-                         f"✓ Commands ${premium_data['Price_Per_Unit']:.2f} vs ${value_data['Price_Per_Unit']:.2f} per unit<br>" \
-                         f"✓ Higher velocity despite premium pricing"
+                         f" Growing {premium_data['YoY_%']:.1f}% vs {value_data['YoY_%']:.1f}%<br>" \
+                         f" Commands ${premium_data['Price_Per_Unit']:.2f} vs ${value_data['Price_Per_Unit']:.2f} per unit<br>" \
+                         f" Higher velocity despite premium pricing"
         
         fig.add_annotation(
             x=2, y=max(premium_values + value_values) * 0.7,
@@ -611,7 +611,7 @@ def create_size_performance(data, product_name):
     fig.add_annotation(
         x=0.98, y=0.98,
         xref='paper', yref='paper',
-        text='<b>Bubble Size = Revenue</b><br>(Market opportunity)<br><br>🟢 Growing<br>🔴 Declining',
+        text='<b>Bubble Size = Revenue</b><br>(Market opportunity)<br><br> Growing<br> Declining',
         showarrow=False,
         font=dict(size=11),
         bgcolor='rgba(255, 255, 255, 0.9)',
@@ -706,16 +706,15 @@ df = load_data()
 df = reclassify_flavors(df)
 
 # Sidebar navigation
-st.sidebar.title("🎯 Navigation")
+st.sidebar.title(" Navigation")
 page = st.sidebar.radio(
     "Select Page:",
-    ["🏠 Home", "🍿 Popcorn", "🌽 Tortilla Chips", "📦 Variety Snack Packs"]
+    [" Home", " Popcorn", " Tortilla Chips", " Variety Snack Packs"]
 )
 
 # HOME PAGE
-if page == "🏠 Home":
+if page == " Home":
     # Title
-    st.markdown('<div class="main-header"><h1 style="color: white; margin: 0;">🎯 Snak King Product Opportunity Analyzer</h1><p style="color: white; margin: 10px 0 0 0;">Data-Driven Insights for Product Development</p></div>', unsafe_allow_html=True)
     
     # Single opportunity matrix
     st.plotly_chart(create_opportunity_matrix(df, " - OVERALL MARKET"), use_container_width=True)
@@ -734,7 +733,7 @@ if page == "🏠 Home":
     """, unsafe_allow_html=True)
     
     # Additional Visualizations Section
-    st.markdown("### 📊 Additional Market Insights")
+    st.markdown("###  Additional Market Insights")
     
     col1, col2 = st.columns(2)
     
@@ -767,18 +766,18 @@ if page == "🏠 Home":
 # PRODUCT PAGES
 else:
     # Determine which product and filter data
-    if page == "🍿 Popcorn":
+    if page == " Popcorn":
         category = "SS POPCORN"
         product_name = "Popcorn"
-        emoji = "🍿"
-    elif page == "🌽 Tortilla Chips":
+        emoji = ""
+    elif page == " Tortilla Chips":
         category = "SS TORTILLA & CORN CHIPS"
         product_name = "Tortilla Chips"
-        emoji = "🌽"
+        emoji = ""
     else:  # Variety Snack Packs
         category = "SS SNACKS VARIETY PACKS"
         product_name = "Variety Snack Packs"
-        emoji = "📦"
+        emoji = ""
     
     # Filter data
     product_data = df[df['Subcategory'] == category].copy()
@@ -788,37 +787,37 @@ else:
     st.markdown("---")
     
     # Slide 3: Brand Performance
-    st.markdown("### 🏷️ Brand Performance Analysis")
+    st.markdown("### ️ Brand Performance Analysis")
     st.plotly_chart(create_brand_performance(product_data, product_name), use_container_width=True)
     
     st.markdown("---")
     
     # Slide 4: Flavor Performance
-    st.markdown("### 🎨 Flavor Opportunity Matrix")
+    st.markdown("###  Flavor Opportunity Matrix")
     st.plotly_chart(create_flavor_performance(product_data, product_name), use_container_width=True)
     
     st.markdown("---")
     
     # Slide 5: Price Tier Analysis
-    st.markdown("### 💰 Premium vs Value Performance")
+    st.markdown("###  Premium vs Value Performance")
     st.plotly_chart(create_price_tier_analysis(product_data, product_name), use_container_width=True)
     
     st.markdown("---")
     
     # Slide 6: Package Size Performance
-    st.markdown("### 📦 Package Size Opportunity")
+    st.markdown("###  Package Size Opportunity")
     st.plotly_chart(create_size_performance(product_data, product_name), use_container_width=True)
     
     st.markdown("---")
     
     # Slide 7: Store Performance
-    st.markdown("### 🏪 Retailer Performance")
+    st.markdown("###  Retailer Performance")
     st.plotly_chart(create_store_performance(product_data, product_name), use_container_width=True)
     
     st.markdown("---")
     
     # Product Recommendation Card
-    st.markdown("## 🎯 Recommended Product Specifications")
+    st.markdown("##  Recommended Product Specifications")
     
     # Specific recommendations based on product
     if product_name == "Popcorn":
@@ -829,11 +828,11 @@ else:
             <br>
             <h4>Product Attributes:</h4>
             <ul>
-                <li>📦 <b>Package Size:</b> 12+ oz (Family/Multi-serve format)</li>
-                <li>🎨 <b>Flavor Profile:</b> Rich Butter (Classic, crowd-pleasing flavor)</li>
-                <li>💰 <b>Price Point:</b> Premium Tier ($5.99-$7.99) - positioned as high-end brand</li>
-                <li>🏷️ <b>Key Features:</b> Non-GMO, Gluten-Free, Whole Grain, Air-Popped, Simple Ingredients</li>
-                <li>🌟 <b>Positioning:</b> "Better-for-You Premium Snacking"</li>
+                <li> <b>Package Size:</b> 12+ oz (Family/Multi-serve format)</li>
+                <li> <b>Flavor Profile:</b> Rich Butter (Classic, crowd-pleasing flavor)</li>
+                <li> <b>Price Point:</b> Premium Tier ($5.99-$7.99) - positioned as high-end brand</li>
+                <li>️ <b>Key Features:</b> Non-GMO, Gluten-Free, Whole Grain, Air-Popped, Simple Ingredients</li>
+                <li> <b>Positioning:</b> "Better-for-You Premium Snacking"</li>
             </ul>
             <br>
             <h4>Target Retailer:</h4>
@@ -841,20 +840,20 @@ else:
             <br>
             <h4>Why This Works:</h4>
             <ul>
-                <li>✅ <b>12+ oz size showing 24% growth</b> - highest growth segment in popcorn</li>
-                <li>✅ <b>Butter flavor dominates</b> - proven winner with mass appeal</li>
-                <li>✅ <b>Premium positioning outperforming</b> - data shows premium growing faster than value</li>
-                <li>✅ <b>Target's demographics align</b> - health-conscious, willing to pay for quality</li>
-                <li>✅ <b>Competes with SkinnyPop</b> - established premium popcorn category leader</li>
-                <li>✅ <b>Family size captures share</b> - larger formats have higher velocity at Target</li>
+                <li> <b>12+ oz size showing 24% growth</b> - highest growth segment in popcorn</li>
+                <li> <b>Butter flavor dominates</b> - proven winner with mass appeal</li>
+                <li> <b>Premium positioning outperforming</b> - data shows premium growing faster than value</li>
+                <li> <b>Target's demographics align</b> - health-conscious, willing to pay for quality</li>
+                <li> <b>Competes with SkinnyPop</b> - established premium popcorn category leader</li>
+                <li> <b>Family size captures share</b> - larger formats have higher velocity at Target</li>
             </ul>
             <br>
             <h4>Go-to-Market Strategy:</h4>
             <ul>
-                <li>🎯 Launch exclusively at Target to build brand prestige</li>
-                <li>📍 Position in "Better-For-You" snack section near SkinnyPop</li>
-                <li>💡 Emphasize simple ingredients and air-popped preparation</li>
-                <li>🎨 Premium packaging with clear window to show product quality</li>
+                <li> Launch exclusively at Target to build brand prestige</li>
+                <li> Position in "Better-For-You" snack section near SkinnyPop</li>
+                <li> Emphasize simple ingredients and air-popped preparation</li>
+                <li> Premium packaging with clear window to show product quality</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
@@ -865,10 +864,10 @@ else:
             <br>
             <h4>Product Attributes:</h4>
             <ul>
-                <li>📦 <b>Package Size:</b> Based on size performance analysis (recommend 8-12 oz)</li>
-                <li>🎨 <b>Flavor Profile:</b> Based on flavor opportunity matrix (consider Lime, Spicy, or Sea Salt)</li>
-                <li>💰 <b>Price Point:</b> Mid-Premium positioning ($3.99-$4.99)</li>
-                <li>🏷️ <b>Key Features:</b> Stone-Ground Corn, Non-GMO, Gluten-Free, Restaurant-Style</li>
+                <li> <b>Package Size:</b> Based on size performance analysis (recommend 8-12 oz)</li>
+                <li> <b>Flavor Profile:</b> Based on flavor opportunity matrix (consider Lime, Spicy, or Sea Salt)</li>
+                <li> <b>Price Point:</b> Mid-Premium positioning ($3.99-$4.99)</li>
+                <li>️ <b>Key Features:</b> Stone-Ground Corn, Non-GMO, Gluten-Free, Restaurant-Style</li>
             </ul>
             <br>
             <h4>Target Retailer:</h4>
@@ -876,10 +875,10 @@ else:
             <br>
             <h4>Why This Works:</h4>
             <ul>
-                <li>✅ Aligns with high-growth flavor trends in category</li>
-                <li>✅ Targets optimal price tier based on market dynamics</li>
-                <li>✅ Positioned for retailer success (high velocity potential)</li>
-                <li>✅ Fills identified market white space</li>
+                <li> Aligns with high-growth flavor trends in category</li>
+                <li> Targets optimal price tier based on market dynamics</li>
+                <li> Positioned for retailer success (high velocity potential)</li>
+                <li> Fills identified market white space</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
@@ -890,10 +889,10 @@ else:
             <br>
             <h4>Product Attributes:</h4>
             <ul>
-                <li>📦 <b>Package Size:</b> Multi-pack format (20-30 individual bags)</li>
-                <li>🎨 <b>Flavor Profile:</b> Mix of popular flavors (Classic, BBQ, Sour Cream & Onion)</li>
-                <li>💰 <b>Price Point:</b> Value-focused for multi-pack ($8.99-$12.99)</li>
-                <li>🏷️ <b>Key Features:</b> Portion-controlled, Variety, Convenient for lunch boxes & snacking</li>
+                <li> <b>Package Size:</b> Multi-pack format (20-30 individual bags)</li>
+                <li> <b>Flavor Profile:</b> Mix of popular flavors (Classic, BBQ, Sour Cream & Onion)</li>
+                <li> <b>Price Point:</b> Value-focused for multi-pack ($8.99-$12.99)</li>
+                <li>️ <b>Key Features:</b> Portion-controlled, Variety, Convenient for lunch boxes & snacking</li>
             </ul>
             <br>
             <h4>Target Retailer:</h4>
@@ -901,10 +900,10 @@ else:
             <br>
             <h4>Why This Works:</h4>
             <ul>
-                <li>✅ Variety packs appeal to families seeking convenience</li>
-                <li>✅ Portion control aligns with health-conscious trends</li>
-                <li>✅ Value positioning for bulk purchase</li>
-                <li>✅ Multiple flavors reduce purchase risk</li>
+                <li> Variety packs appeal to families seeking convenience</li>
+                <li> Portion control aligns with health-conscious trends</li>
+                <li> Value positioning for bulk purchase</li>
+                <li> Multiple flavors reduce purchase risk</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
