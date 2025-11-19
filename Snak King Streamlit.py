@@ -270,7 +270,7 @@ def create_flavor_performance(data, product_name):
             marker=dict(
                 size=growing['Revenue_M'],
                 sizemode='diameter',
-                sizeref=max(flavor_analysis['Revenue_M']) / 60,
+                sizeref=max(flavor_analysis['Revenue_M']) / 45,
                 color='#27AE60',
                 line=dict(width=2, color='white'),
                 opacity=0.7
