@@ -195,7 +195,7 @@ def create_brand_performance(data, product_name):
     fig.add_annotation(
         x=brand_analysis['Velocity_K'].max() * 0.9,
         y=brand_analysis['Revenue_M'].max() * 0.9,
-        text="HIGH VELOCITY<br>HIGH VOLUME<br>RETAILER'S DREAM",
+        text="HIGH VELOCITY<br>HIGH VOLUME",
         showarrow=False,
         font=dict(size=11, color='darkgreen', family='Arial Black'),
         bgcolor='rgba(46, 204, 113, 0.2)',
@@ -329,7 +329,7 @@ def create_flavor_performance(data, product_name):
         fig.add_annotation(
             x=max_vel * 0.85,
             y=max_growth * 0.85,
-            text="⭐ HIGH VELOCITY<br>HIGH GROWTH<br>(Retailer's Dream)",
+            text="⭐ HIGH VELOCITY<br>HIGH GROWTH",
             showarrow=False,
             font=dict(size=10, color='darkgreen', family='Arial Black'),
             bgcolor='rgba(144, 238, 144, 0.3)',
@@ -600,7 +600,7 @@ def create_size_performance(data, product_name):
         fig.add_annotation(
             x=max_vel * 0.85,
             y=max_growth * 0.85,
-            text="⭐ HIGH VELOCITY<br>HIGH GROWTH<br>(Retailer's Dream)",
+            text="⭐ HIGH VELOCITY<br>HIGH GROWTH",
             showarrow=False,
             font=dict(size=10, color='darkgreen', family='Arial Black'),
             bgcolor='rgba(144, 238, 144, 0.3)',
