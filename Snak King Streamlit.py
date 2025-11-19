@@ -541,16 +541,16 @@ def create_size_performance(data, product_name):
             y=growing['YoY_%'],
             mode='markers+text',
             marker=dict(
-                size=growing['Revenue_M'],
+                size=growing['Revenue_M'] * 3,  # Triple the size values
                 sizemode='diameter',
-                sizeref=max(size_analysis['Revenue_M']) / 15,  # Even larger bubbles (was 20)
+                sizeref=max(size_analysis['Revenue_M']) / 5,  # Much larger bubbles (was 15)
                 color='#27AE60',
                 line=dict(width=3, color='white'),
                 opacity=0.85
             ),
             text=growing['Size_Group'],
             textposition='middle center',
-            textfont=dict(size=14, color='white', family='Arial Black'),
+            textfont=dict(size=16, color='white', family='Arial Black'),
             hovertemplate='<b>%{text}</b><br>' +
                           'Velocity: $%{x:,.0f}/TDP<br>' +
                           'Growth: %{y:.1f}%<br>' +
@@ -568,16 +568,16 @@ def create_size_performance(data, product_name):
             y=declining['YoY_%'],
             mode='markers+text',
             marker=dict(
-                size=declining['Revenue_M'],
+                size=declining['Revenue_M'] * 3,  # Triple the size values
                 sizemode='diameter',
-                sizeref=max(size_analysis['Revenue_M']) / 15,  # Even larger bubbles (was 20)
+                sizeref=max(size_analysis['Revenue_M']) / 5,  # Much larger bubbles (was 15)
                 color='#E74C3C',
                 line=dict(width=3, color='white'),
                 opacity=0.85
             ),
             text=declining['Size_Group'],
             textposition='middle center',
-            textfont=dict(size=14, color='white', family='Arial Black'),
+            textfont=dict(size=16, color='white', family='Arial Black'),
             hovertemplate='<b>%{text}</b><br>' +
                           'Velocity: $%{x:,.0f}/TDP<br>' +
                           'Growth: %{y:.1f}%<br>' +
