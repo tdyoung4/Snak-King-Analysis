@@ -7,6 +7,7 @@ import numpy as np
 # Page config
 st.set_page_config(
     page_title="Snak King Product Analyzer",
+    page_icon="👑",
     layout="wide"
 )
 
@@ -84,8 +85,8 @@ def reclassify_flavors(df):
     return df
 
 # Function to create opportunity matrix
-def create_opportunity_matrix(, title_suffix=""):
-    subcategory_analysis = .groupby('Subcategory').agg({
+def create_opportunity_matrix(data, title_suffix=""):
+    subcategory_analysis = data.groupby('Subcategory').agg({
         'Dollars': 'sum',
         'Dollars, Yago': 'sum',
         'Dollars/TDP': 'mean'
@@ -149,9 +150,9 @@ def create_opportunity_matrix(, title_suffix=""):
     return fig
 
 # Slide 3: Brand Performance
-def create_brand_performance(, product_name):
+def create_brand_performance(data, product_name):
     # Aggregate by brand
-    brand_analysis = .groupby('Brand').agg({
+    brand_analysis = data.groupby('Brand').agg({
         'Dollars': 'sum',
         'Dollars/TDP': 'mean'
     }).reset_index()
@@ -218,9 +219,9 @@ def create_brand_performance(, product_name):
     return fig
 
 # Slide 4: Flavor Performance Matrix - FIXED VERSION
-def create_flavor_performance(, product_name):
+def create_flavor_performance(data, product_name):
     # Aggregate by flavor
-    flavor_analysis = .groupby('FLAVOR').agg({
+    flavor_analysis = data.groupby('FLAVOR').agg({
         'Dollars': 'sum',
         'Dollars, Yago': 'sum',
         'Dollars/TDP': 'mean',
@@ -234,7 +235,7 @@ def create_flavor_performance(, product_name):
     )
     
     # Calculate distribution percentage
-    total_tdp = ['TDP'].sum()
+    total_tdp = data['TDP'].sum()
     flavor_analysis['Distribution_%'] = (flavor_analysis['TDP'] / total_tdp * 100).round(0).astype(int)
     
     # Replace infinity with NaN, then drop NaN
@@ -366,21 +367,21 @@ def create_flavor_performance(, product_name):
     return fig
 
 # Slide 5: Price Tier Analysis
-def create_price_tier_analysis(, product_name):
+def create_price_tier_analysis(data, product_name):
     # Calculate price per unit
-    _copy = .copy()
-    _copy['Price_Per_Unit'] = _copy['Dollars'] / _copy['Units']
+    data_copy = data.copy()
+    data_copy['Price_Per_Unit'] = data_copy['Dollars'] / data_copy['Units']
     
     # Define premium (top 25%) and value (bottom 25%) by price
-    price_75 = _copy['Price_Per_Unit'].quantile(0.75)
-    price_25 = _copy['Price_Per_Unit'].quantile(0.25)
+    price_75 = data_copy['Price_Per_Unit'].quantile(0.75)
+    price_25 = data_copy['Price_Per_Unit'].quantile(0.25)
     
-    _copy['Tier'] = 'Mid-Tier'
-    _copy.loc[_copy['Price_Per_Unit'] >= price_75, 'Tier'] = 'Premium (Top 25% Price)'
-    _copy.loc[_copy['Price_Per_Unit'] <= price_25, 'Tier'] = 'Value (Bottom 25% Price)'
+    data_copy['Tier'] = 'Mid-Tier'
+    data_copy.loc[data_copy['Price_Per_Unit'] >= price_75, 'Tier'] = 'Premium (Top 25% Price)'
+    data_copy.loc[data_copy['Price_Per_Unit'] <= price_25, 'Tier'] = 'Value (Bottom 25% Price)'
     
     # Aggregate by tier
-    tier_analysis = _copy.groupby('Tier').agg({
+    tier_analysis = data_copy.groupby('Tier').agg({
         'Dollars': 'sum',
         'Dollars, Yago': 'sum',
         'Dollars/TDP': 'mean',
@@ -402,13 +403,13 @@ def create_price_tier_analysis(, product_name):
     
     fig = go.Figure()
     
-    premium_ = tier_analysis[tier_analysis['Tier'] == 'Premium (Top 25% Price)'].iloc[0]
-    value_ = tier_analysis[tier_analysis['Tier'] == 'Value (Bottom 25% Price)'].iloc[0]
+    premium_data = tier_analysis[tier_analysis['Tier'] == 'Premium (Top 25% Price)'].iloc[0]
+    value_data = tier_analysis[tier_analysis['Tier'] == 'Value (Bottom 25% Price)'].iloc[0]
     
-    premium_values = [premium_['Revenue_M'], premium_['YoY_%'], 
-                     premium_['Velocity_K'], premium_['Price_Per_Unit']]
-    value_values = [value_['Revenue_M'], value_['YoY_%'], 
-                   value_['Velocity_K'], value_['Price_Per_Unit']]
+    premium_values = [premium_data['Revenue_M'], premium_data['YoY_%'], 
+                     premium_data['Velocity_K'], premium_data['Price_Per_Unit']]
+    value_values = [value_data['Revenue_M'], value_data['YoY_%'], 
+                   value_data['Velocity_K'], value_data['Price_Per_Unit']]
     
     fig.add_trace(go.Bar(
         name='Premium (Top 25% Price)',
@@ -431,10 +432,10 @@ def create_price_tier_analysis(, product_name):
     ))
     
     # Add annotation about premium performance
-    if premium_['YoY_%'] > value_['YoY_%']:
+    if premium_data['YoY_%'] > value_data['YoY_%']:
         annotation_text = f"Premium {product_name.lower()} is outperforming:<br>" \
-                         f"✓ Growing {premium_['YoY_%']:.1f}% vs {value_['YoY_%']:.1f}%<br>" \
-                         f"✓ Commands ${premium_['Price_Per_Unit']:.2f} vs ${value_['Price_Per_Unit']:.2f} per unit<br>" \
+                         f"✓ Growing {premium_data['YoY_%']:.1f}% vs {value_data['YoY_%']:.1f}%<br>" \
+                         f"✓ Commands ${premium_data['Price_Per_Unit']:.2f} vs ${value_data['Price_Per_Unit']:.2f} per unit<br>" \
                          f"✓ Higher velocity despite premium pricing"
         
         fig.add_annotation(
@@ -467,7 +468,7 @@ def create_price_tier_analysis(, product_name):
     return fig
 
 # Slide 6: Package Size Performance - FIXED VERSION
-def create_size_performance(, product_name):
+def create_size_performance(data, product_name):
     # Create size groups
     def group_size(size):
         if pd.isna(size):
@@ -485,11 +486,11 @@ def create_size_performance(, product_name):
             return '12+ oz'
     
     # Add size group column
-    _copy = .copy()
-    _copy['Size_Group'] = _copy['SIZE'].apply(group_size)
+    data_copy = data.copy()
+    data_copy['Size_Group'] = data_copy['SIZE'].apply(group_size)
     
     # Aggregate by size group
-    size_analysis = _copy.groupby('Size_Group').agg({
+    size_analysis = data_copy.groupby('Size_Group').agg({
         'Dollars': 'sum',
         'Dollars, Yago': 'sum',
         'Dollars/TDP': 'mean',
@@ -714,7 +715,7 @@ page = st.sidebar.radio(
 # HOME PAGE
 if page == "🏠 Home":
     # Title
-    st.markdown('<div class="main-header"><h1 style="color: white; margin: 0;">🎯 Snak King Product Opportunity Analyzer</h1><p style="color: white; margin: 10px 0 0 0;)
+    st.markdown('<div class="main-header"><h1 style="color: white; margin: 0;">Snak King Product Opportunity Analyzer</h1></div>', unsafe_allow_html=True)
     
     # Single opportunity matrix
     st.plotly_chart(create_opportunity_matrix(df, " - OVERALL MARKET"), use_container_width=True)
@@ -733,7 +734,7 @@ if page == "🏠 Home":
     """, unsafe_allow_html=True)
     
     # Additional Visualizations Section
-    st.markdown("### 📊 Additional Market Insights")
+    st.markdown("### Additional Market Insights")
     
     col1, col2 = st.columns(2)
     
@@ -783,56 +784,56 @@ else:
     product_data = df[df['Subcategory'] == category].copy()
     
     # Page title
-    st.title(f"{emoji} {product_name} Market Analysis")
+    st.title(f"{product_name} Market Analysis")
     st.markdown("---")
     
     # Slide 3: Brand Performance
-    st.markdown("### 🏷️ Brand Performance Analysis")
+    st.markdown("### Brand Performance Analysis")
     st.plotly_chart(create_brand_performance(product_data, product_name), use_container_width=True)
     
     st.markdown("---")
     
     # Slide 4: Flavor Performance
-    st.markdown("### 🎨 Flavor Opportunity Matrix")
+    st.markdown("### Flavor Opportunity Matrix")
     st.plotly_chart(create_flavor_performance(product_data, product_name), use_container_width=True)
     
     st.markdown("---")
     
     # Slide 5: Price Tier Analysis
-    st.markdown("### 💰 Premium vs Value Performance")
+    st.markdown("### Premium vs Value Performance")
     st.plotly_chart(create_price_tier_analysis(product_data, product_name), use_container_width=True)
     
     st.markdown("---")
     
     # Slide 6: Package Size Performance
-    st.markdown("### 📦 Package Size Opportunity")
+    st.markdown("### Package Size Opportunity")
     st.plotly_chart(create_size_performance(product_data, product_name), use_container_width=True)
     
     st.markdown("---")
     
     # Slide 7: Store Performance
-    st.markdown("### 🏪 Retailer Performance")
+    st.markdown("### Retailer Performance")
     st.plotly_chart(create_store_performance(product_data, product_name), use_container_width=True)
     
     st.markdown("---")
     
     # Product Recommendation Card
-    st.markdown("## 🎯 Recommended Product Specifications")
+    st.markdown("## Recommended Product Specifications")
     
     # Specific recommendations based on product
     if product_name == "Popcorn":
         st.markdown(f"""
         <div class="product-card">
-            <h3>{emoji} Snak King Premium Butter Popcorn</h3>
+            <h3>Snak King Premium Butter Popcorn</h3>
             <p style="color: #7f8c8d; font-style: italic;">Positioned as a premium, better-for-you alternative competing with SkinnyPop</p>
             <br>
             <h4>Product Attributes:</h4>
             <ul>
-                <li>📦 <b>Package Size:</b> 12+ oz (Family/Multi-serve format)</li>
-                <li>🎨 <b>Flavor Profile:</b> Rich Butter (Classic, crowd-pleasing flavor)</li>
-                <li>💰 <b>Price Point:</b> Premium Tier ($5.99-$7.99) - positioned as high-end brand</li>
-                <li>🏷️ <b>Key Features:</b> Non-GMO, Gluten-Free, Whole Grain, Air-Popped, Simple Ingredients</li>
-                <li>🌟 <b>Positioning:</b> "Better-for-You Premium Snacking"</li>
+                <li><b>Package Size:</b> 12+ oz (Family/Multi-serve format)</li>
+                <li><b>Flavor Profile:</b> Rich Butter (Classic, crowd-pleasing flavor)</li>
+                <li><b>Price Point:</b> Premium Tier ($5.99-$7.99) - positioned as high-end brand</li>
+                <li><b>Key Features:</b> Non-GMO, Gluten-Free, Whole Grain, Air-Popped, Simple Ingredients</li>
+                <li><b>Positioning:</b> "Better-for-You Premium Snacking"</li>
             </ul>
             <br>
             <h4>Target Retailer:</h4>
@@ -850,24 +851,24 @@ else:
             <br>
             <h4>Go-to-Market Strategy:</h4>
             <ul>
-                <li>🎯 Launch exclusively at Target to build brand prestige</li>
-                <li>📍 Position in "Better-For-You" snack section near SkinnyPop</li>
-                <li>💡 Emphasize simple ingredients and air-popped preparation</li>
-                <li>🎨 Premium packaging with clear window to show product quality</li>
+                <li>Launch exclusively at Target to build brand prestige</li>
+                <li>Position in "Better-For-You" snack section near SkinnyPop</li>
+                <li>Emphasize simple ingredients and air-popped preparation</li>
+                <li>Premium packaging with clear window to show product quality</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
     elif product_name == "Tortilla Chips":
         st.markdown(f"""
         <div class="product-card">
-            <h3>{emoji} Snak King {product_name}</h3>
+            <h3>Snak King {product_name}</h3>
             <br>
             <h4>Product Attributes:</h4>
             <ul>
-                <li>📦 <b>Package Size:</b> Based on size performance analysis (recommend 8-12 oz)</li>
-                <li>🎨 <b>Flavor Profile:</b> Based on flavor opportunity matrix (consider Lime, Spicy, or Sea Salt)</li>
-                <li>💰 <b>Price Point:</b> Mid-Premium positioning ($3.99-$4.99)</li>
-                <li>🏷️ <b>Key Features:</b> Stone-Ground Corn, Non-GMO, Gluten-Free, Restaurant-Style</li>
+                <li><b>Package Size:</b> Based on size performance analysis (recommend 8-12 oz)</li>
+                <li><b>Flavor Profile:</b> Based on flavor opportunity matrix (consider Lime, Spicy, or Sea Salt)</li>
+                <li><b>Price Point:</b> Mid-Premium positioning ($3.99-$4.99)</li>
+                <li><b>Key Features:</b> Stone-Ground Corn, Non-GMO, Gluten-Free, Restaurant-Style</li>
             </ul>
             <br>
             <h4>Target Retailer:</h4>
@@ -885,14 +886,14 @@ else:
     else:  # Variety Snack Packs
         st.markdown(f"""
         <div class="product-card">
-            <h3>{emoji} Snak King {product_name}</h3>
+            <h3>Snak King {product_name}</h3>
             <br>
             <h4>Product Attributes:</h4>
             <ul>
-                <li>📦 <b>Package Size:</b> Multi-pack format (20-30 individual bags)</li>
-                <li>🎨 <b>Flavor Profile:</b> Mix of popular flavors (Classic, BBQ, Sour Cream & Onion)</li>
-                <li>💰 <b>Price Point:</b> Value-focused for multi-pack ($8.99-$12.99)</li>
-                <li>🏷️ <b>Key Features:</b> Portion-controlled, Variety, Convenient for lunch boxes & snacking</li>
+                <li><b>Package Size:</b> Multi-pack format (20-30 individual bags)</li>
+                <li><b>Flavor Profile:</b> Mix of popular flavors (Classic, BBQ, Sour Cream & Onion)</li>
+                <li><b>Price Point:</b> Value-focused for multi-pack ($8.99-$12.99)</li>
+                <li><b>Key Features:</b> Portion-controlled, Variety, Convenient for lunch boxes & snacking</li>
             </ul>
             <br>
             <h4>Target Retailer:</h4>
