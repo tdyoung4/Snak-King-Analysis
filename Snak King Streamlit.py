@@ -268,12 +268,11 @@ def create_flavor_performance(data, product_name):
             y=growing['YoY_%'],
             mode='markers+text',
             marker=dict(
+                size=growing['Revenue_M'],
                 sizemode='diameter',
-                size = declining['Revenue_M'] ** 1.2,
+                sizeref=max(flavor_analysis['Revenue_M']) / 60,
                 color='#27AE60',
-                line=dict(width=2, color='white'),
-                opacity=0.7
-            ),
+                
             text=growing['FLAVOR'],
             textposition='top center',
             textfont=dict(size=8),
