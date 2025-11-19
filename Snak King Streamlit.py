@@ -218,13 +218,14 @@ def create_brand_performance(data, product_name):
     
     return fig
 
-# Slide 4: Flavor Performance Matrix
+# Slide 4: Flavor Performance Matrix - FIXED VERSION
 def create_flavor_performance(data, product_name):
     # Aggregate by flavor
     flavor_analysis = data.groupby('FLAVOR').agg({
         'Dollars': 'sum',
         'Dollars, Yago': 'sum',
-        'Dollars/TDP': 'mean'
+        'Dollars/TDP': 'mean',
+        'TDP': 'sum'
     }).reset_index()
     
     # Calculate YoY growth
@@ -233,58 +234,116 @@ def create_flavor_performance(data, product_name):
         flavor_analysis['Dollars, Yago'] * 100
     )
     
+    # Calculate distribution percentage
+    total_tdp = data['TDP'].sum()
+    flavor_analysis['Distribution_%'] = (flavor_analysis['TDP'] / total_tdp * 100).round(0).astype(int)
+    
     # Replace infinity with NaN, then drop NaN
     flavor_analysis['YoY_%'] = flavor_analysis['YoY_%'].replace([float('inf'), float('-inf')], float('nan'))
     flavor_analysis = flavor_analysis.dropna(subset=['YoY_%'])
     
     # Filter out very small flavors AFTER calculating growth
-    flavor_analysis = flavor_analysis[flavor_analysis['Dollars'] > 500000]  # >$500k revenue (lowered threshold)
+    flavor_analysis = flavor_analysis[flavor_analysis['Dollars'] > 500000]  # >$500k revenue
     
-    flavor_analysis['Velocity_K'] = flavor_analysis['Dollars/TDP'] / 1000
+    # Convert velocity to thousands (already in $/TDP, just divide by 1000)
+    flavor_analysis['Velocity_Display'] = flavor_analysis['Dollars/TDP'] / 1000
     flavor_analysis['Revenue_M'] = flavor_analysis['Dollars'] / 1_000_000
     
-    colors = ['#2ECC71' if x > 0 else '#E74C3C' for x in flavor_analysis['YoY_%']]
+    # Sort by revenue for consistent display
+    flavor_analysis = flavor_analysis.sort_values('Revenue_M', ascending=False)
+    
+    # Create separate traces for growing vs declining
+    growing = flavor_analysis[flavor_analysis['YoY_%'] >= 0]
+    declining = flavor_analysis[flavor_analysis['YoY_%'] < 0]
     
     fig = go.Figure()
     
-    fig.add_trace(go.Scatter(
-        x=flavor_analysis['Velocity_K'],
-        y=flavor_analysis['YoY_%'],
-        mode='markers+text',
-        marker=dict(
-            size=flavor_analysis['Revenue_M'],
-            sizemode='diameter',
-            sizeref=max(flavor_analysis['Revenue_M']) / 80,
-            color=colors,
-            line=dict(width=2, color='white'),
-            opacity=0.7
-        ),
-        text=flavor_analysis['FLAVOR'],
-        textposition='top center',
-        textfont=dict(size=8, color='#2C3E50'),
-        hovertemplate='<b>%{text}</b><br>' +
-                      'Velocity: $%{x:.1f}k/TDP<br>' +
-                      'YoY Growth: %{y:.1f}%<br>' +
-                      'Revenue: $%{marker.size:.0f}M<br>' +
-                      '<extra></extra>',
-        name=''
-    ))
+    # Growing flavors
+    if len(growing) > 0:
+        fig.add_trace(go.Scatter(
+            x=growing['Velocity_Display'],
+            y=growing['YoY_%'],
+            mode='markers+text',
+            marker=dict(
+                size=growing['Revenue_M'],
+                sizemode='diameter',
+                sizeref=max(flavor_analysis['Revenue_M']) / 60,
+                color='#27AE60',
+                line=dict(width=2, color='white'),
+                opacity=0.7
+            ),
+            text=growing['FLAVOR'],
+            textposition='top center',
+            textfont=dict(size=8),
+            hovertemplate='<b>%{text}</b><br>' +
+                          'Velocity: $%{x:,.0f}/TDP<br>' +
+                          'Growth: %{y:.1f}%<br>' +
+                          'Revenue: $' + growing['Revenue_M'].apply(lambda x: f'{x:.1f}M').values + '<br>' +
+                          'Distribution: ' + growing['Distribution_%'].astype(str).values + '% stores<br>' +
+                          '<extra></extra>',
+            name='Growing',
+            showlegend=False
+        ))
     
-    fig.add_hline(y=0, line_dash="dash", line_color="gray", line_width=1)
-    fig.add_vline(x=flavor_analysis['Velocity_K'].median(), line_dash="dash", line_color="gray", line_width=1)
+    # Declining flavors
+    if len(declining) > 0:
+        fig.add_trace(go.Scatter(
+            x=declining['Velocity_Display'],
+            y=declining['YoY_%'],
+            mode='markers+text',
+            marker=dict(
+                size=declining['Revenue_M'],
+                sizemode='diameter',
+                sizeref=max(flavor_analysis['Revenue_M']) / 60,
+                color='#E74C3C',
+                line=dict(width=2, color='white'),
+                opacity=0.7
+            ),
+            text=declining['FLAVOR'],
+            textposition='top center',
+            textfont=dict(size=8),
+            hovertemplate='<b>%{text}</b><br>' +
+                          'Velocity: $%{x:,.0f}/TDP<br>' +
+                          'Growth: %{y:.1f}%<br>' +
+                          'Revenue: $' + declining['Revenue_M'].apply(lambda x: f'{x:.1f}M').values + '<br>' +
+                          'Distribution: ' + declining['Distribution_%'].astype(str).values + '% stores<br>' +
+                          '<extra></extra>',
+            name='Declining',
+            showlegend=False
+        ))
     
-    # Add quadrant label for high performers
-    max_growth_idx = flavor_analysis['YoY_%'].idxmax()
-    if flavor_analysis.loc[max_growth_idx, 'YoY_%'] > 0:
+    # Add quadrant lines
+    fig.add_hline(y=0, line_dash="dash", line_color="gray", line_width=2, opacity=0.5)
+    fig.add_vline(x=flavor_analysis['Velocity_Display'].median(), line_dash="dash", line_color="gray", opacity=0.5)
+    
+    # Add quadrant labels
+    if len(growing) > 0:
+        max_vel = flavor_analysis['Velocity_Display'].max()
+        max_growth = flavor_analysis['YoY_%'].max()
+        median_vel = flavor_analysis['Velocity_Display'].median()
+        
+        # Top right - best performers
         fig.add_annotation(
-            x=flavor_analysis['Velocity_K'].max() * 0.85,
-            y=flavor_analysis['YoY_%'].max() * 0.85,
-            text="HIGH VELOCITY<br>HIGH GROWTH<br>(Retailer's Dream)",
+            x=max_vel * 0.85,
+            y=max_growth * 0.85,
+            text="⭐ HIGH VELOCITY<br>HIGH GROWTH<br>(Retailer's Dream)",
             showarrow=False,
             font=dict(size=10, color='darkgreen', family='Arial Black'),
-            bgcolor='rgba(46, 204, 113, 0.2)',
-            borderpad=8
+            bgcolor='rgba(144, 238, 144, 0.3)',
+            borderpad=5
         )
+        
+        # Top left - slower but growing
+        if median_vel > flavor_analysis['Velocity_Display'].min():
+            fig.add_annotation(
+                x=flavor_analysis['Velocity_Display'].min() * 1.2,
+                y=max_growth * 0.85,
+                text="GROWING<br>SLOWER MOVERS",
+                showarrow=False,
+                font=dict(size=9, color='darkgreen'),
+                bgcolor='rgba(173, 216, 230, 0.3)',
+                borderpad=5
+            )
     
     fig.update_layout(
         title={
@@ -297,7 +356,9 @@ def create_flavor_performance(data, product_name):
         yaxis_title='Year-over-Year Growth (%) - Momentum',
         template='plotly_white',
         height=600,
-        showlegend=False
+        showlegend=False,
+        hovermode='closest',
+        font=dict(size=11)
     )
     
     return fig
@@ -403,13 +464,14 @@ def create_price_tier_analysis(data, product_name):
     
     return fig
 
-# Slide 6: Package Size Performance
+# Slide 6: Package Size Performance - FIXED VERSION
 def create_size_performance(data, product_name):
     # Aggregate by size
     size_analysis = data.groupby('SIZE').agg({
         'Dollars': 'sum',
         'Dollars, Yago': 'sum',
-        'Dollars/TDP': 'mean'
+        'Dollars/TDP': 'mean',
+        'TDP': 'sum'
     }).reset_index()
     
     # Calculate YoY growth
@@ -418,61 +480,101 @@ def create_size_performance(data, product_name):
         size_analysis['Dollars, Yago'] * 100
     )
     
+    # Calculate distribution percentage
+    total_tdp = data['TDP'].sum()
+    size_analysis['Distribution_%'] = (size_analysis['TDP'] / total_tdp * 100).round(0).astype(int)
+    
     # Replace infinity with NaN, then drop NaN
     size_analysis['YoY_%'] = size_analysis['YoY_%'].replace([float('inf'), float('-inf')], float('nan'))
     size_analysis = size_analysis.dropna(subset=['YoY_%'])
     
     # Filter out very small sizes AFTER calculating growth
-    size_analysis = size_analysis[size_analysis['Dollars'] > 2000000]  # >$2M revenue (lowered threshold)
+    size_analysis = size_analysis[size_analysis['Dollars'] > 2000000]  # >$2M revenue
     
-    size_analysis['Velocity_K'] = size_analysis['Dollars/TDP'] / 1000
+    # Convert velocity to thousands
+    size_analysis['Velocity_Display'] = size_analysis['Dollars/TDP'] / 1000
     size_analysis['Revenue_M'] = size_analysis['Dollars'] / 1_000_000
     
-    colors = ['#2ECC71' if x > 0 else '#E74C3C' for x in size_analysis['YoY_%']]
+    # Sort by size for better display
+    size_analysis = size_analysis.sort_values('SIZE')
+    
+    # Create separate traces for growing vs declining
+    growing = size_analysis[size_analysis['YoY_%'] >= 0]
+    declining = size_analysis[size_analysis['YoY_%'] < 0]
     
     fig = go.Figure()
     
-    fig.add_trace(go.Scatter(
-        x=size_analysis['Velocity_K'],
-        y=size_analysis['YoY_%'],
-        mode='markers+text',
-        marker=dict(
-            size=size_analysis['Revenue_M'],
-            sizemode='diameter',
-            sizeref=max(size_analysis['Revenue_M']) / 80,
-            color=colors,
-            line=dict(width=2, color='white'),
-            opacity=0.7
-        ),
-        text=[f"{s} oz" for s in size_analysis['SIZE']],
-        textposition='top center',
-        textfont=dict(size=9, color='#2C3E50', family='Arial Black'),
-        hovertemplate='<b>%{text}</b><br>' +
-                      'Velocity: $%{x:.1f}k/TDP<br>' +
-                      'YoY Growth: %{y:.1f}%<br>' +
-                      'Revenue: $%{marker.size:.0f}M<br>' +
-                      '<extra></extra>',
-        name=''
-    ))
+    # Growing sizes
+    if len(growing) > 0:
+        fig.add_trace(go.Scatter(
+            x=growing['Velocity_Display'],
+            y=growing['YoY_%'],
+            mode='markers+text',
+            marker=dict(
+                size=growing['Revenue_M'],
+                sizemode='diameter',
+                sizeref=max(size_analysis['Revenue_M']) / 60,
+                color='#27AE60',
+                line=dict(width=2, color='white'),
+                opacity=0.7
+            ),
+            text=[f"{s} oz" for s in growing['SIZE']],
+            textposition='top center',
+            textfont=dict(size=9, color='#2C3E50', family='Arial Black'),
+            hovertemplate='<b>%{text}</b><br>' +
+                          'Velocity: $%{x:,.0f}/TDP<br>' +
+                          'Growth: %{y:.1f}%<br>' +
+                          'Revenue: $' + growing['Revenue_M'].apply(lambda x: f'{x:.0f}M').values + '<br>' +
+                          'Distribution: ' + growing['Distribution_%'].astype(str).values + '% stores<br>' +
+                          '<extra></extra>',
+            name='Growing',
+            showlegend=False
+        ))
     
-    fig.add_hline(y=0, line_dash="dash", line_color="gray", line_width=1)
-    fig.add_vline(x=size_analysis['Velocity_K'].median(), line_dash="dash", line_color="gray", line_width=1)
+    # Declining sizes
+    if len(declining) > 0:
+        fig.add_trace(go.Scatter(
+            x=declining['Velocity_Display'],
+            y=declining['YoY_%'],
+            mode='markers+text',
+            marker=dict(
+                size=declining['Revenue_M'],
+                sizemode='diameter',
+                sizeref=max(size_analysis['Revenue_M']) / 60,
+                color='#E74C3C',
+                line=dict(width=2, color='white'),
+                opacity=0.7
+            ),
+            text=[f"{s} oz" for s in declining['SIZE']],
+            textposition='top center',
+            textfont=dict(size=9, color='#2C3E50', family='Arial Black'),
+            hovertemplate='<b>%{text}</b><br>' +
+                          'Velocity: $%{x:,.0f}/TDP<br>' +
+                          'Growth: %{y:.1f}%<br>' +
+                          'Revenue: $' + declining['Revenue_M'].apply(lambda x: f'{x:.0f}M').values + '<br>' +
+                          'Distribution: ' + declining['Distribution_%'].astype(str).values + '% stores<br>' +
+                          '<extra></extra>',
+            name='Declining',
+            showlegend=False
+        ))
     
-    # Find high performers
-    high_performers = size_analysis[
-        (size_analysis['YoY_%'] > 5) & 
-        (size_analysis['Velocity_K'] > size_analysis['Velocity_K'].median())
-    ]
+    # Add quadrant lines
+    fig.add_hline(y=0, line_dash="dash", line_color="gray", line_width=2, opacity=0.5)
+    fig.add_vline(x=size_analysis['Velocity_Display'].median(), line_dash="dash", line_color="gray", opacity=0.5)
     
-    if len(high_performers) > 0:
+    # Add quadrant labels for high performers
+    if len(growing) > 0:
+        max_vel = size_analysis['Velocity_Display'].max()
+        max_growth = size_analysis['YoY_%'].max()
+        
         fig.add_annotation(
-            x=size_analysis['Velocity_K'].max() * 0.85,
-            y=size_analysis['YoY_%'].max() * 0.85,
-            text="HIGH VELOCITY<br>HIGH GROWTH<br>(Retailer's Dream)",
+            x=max_vel * 0.85,
+            y=max_growth * 0.85,
+            text="⭐ HIGH VELOCITY<br>HIGH GROWTH<br>(Retailer's Dream)",
             showarrow=False,
             font=dict(size=10, color='darkgreen', family='Arial Black'),
-            bgcolor='rgba(46, 204, 113, 0.2)',
-            borderpad=8
+            bgcolor='rgba(144, 238, 144, 0.3)',
+            borderpad=5
         )
     
     fig.update_layout(
@@ -486,7 +588,9 @@ def create_size_performance(data, product_name):
         yaxis_title='Year-over-Year Growth (%) - Momentum',
         template='plotly_white',
         height=600,
-        showlegend=False
+        showlegend=False,
+        hovermode='closest',
+        font=dict(size=11)
     )
     
     return fig
