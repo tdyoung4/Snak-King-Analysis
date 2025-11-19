@@ -33,7 +33,7 @@ st.markdown("""
 # Load data
 @st.cache_data
 def load_data():
-    df = pd.read_excel('Salty Snack Market Data Fall 2025-1 (2).xlsx')
+    df = pd.read_excel('/Users/thomasyoung/Downloads/Salty Snack Market Data Fall 2025-1 (2).xlsx')
     df = df[df['Product Level'] == 'UPC'].copy()
     return df
 
@@ -227,8 +227,8 @@ def create_flavor_performance(data, product_name):
         'Dollars/TDP': 'mean'
     }).reset_index()
     
-    # Filter out very small flavors (lowered threshold)
-    flavor_analysis = flavor_analysis[flavor_analysis['Dollars'] > 100000]  # >$100k revenue
+    # Filter out very small flavors
+    flavor_analysis = flavor_analysis[flavor_analysis['Dollars'] > 1000000]  # >$1M revenue
     
     flavor_analysis['YoY_%'] = (
         (flavor_analysis['Dollars'] - flavor_analysis['Dollars, Yago']) / 
@@ -400,36 +400,15 @@ def create_price_tier_analysis(data, product_name):
 
 # Slide 6: Package Size Performance
 def create_size_performance(data, product_name):
-    # Create size groups
-    def group_size(size):
-        try:
-            size_val = float(size)
-            if size_val <= 2.5:
-                return "0-2.5 oz"
-            elif size_val <= 8:
-                return "2.5-8 oz"
-            elif size_val <= 12:
-                return "8-12 oz"
-            else:
-                return "12+ oz"
-        except:
-            return "Unknown"
-    
-    data_copy = data.copy()
-    data_copy['Size_Group'] = data_copy['SIZE'].apply(group_size)
-    
-    # Aggregate by size group
-    size_analysis = data_copy.groupby('Size_Group').agg({
+    # Aggregate by size
+    size_analysis = data.groupby('SIZE').agg({
         'Dollars': 'sum',
         'Dollars, Yago': 'sum',
         'Dollars/TDP': 'mean'
     }).reset_index()
     
-    # Filter out unknown and very small sizes
-    size_analysis = size_analysis[
-        (size_analysis['Size_Group'] != 'Unknown') & 
-        (size_analysis['Dollars'] > 1000000)
-    ]
+    # Filter out very small sizes
+    size_analysis = size_analysis[size_analysis['Dollars'] > 5000000]  # >$5M revenue
     
     size_analysis['YoY_%'] = (
         (size_analysis['Dollars'] - size_analysis['Dollars, Yago']) / 
@@ -438,11 +417,6 @@ def create_size_performance(data, product_name):
     
     size_analysis['Velocity_K'] = size_analysis['Dollars/TDP'] / 1000
     size_analysis['Revenue_M'] = size_analysis['Dollars'] / 1_000_000
-    
-    # Sort by size group order
-    size_order = ["0-2.5 oz", "2.5-8 oz", "8-12 oz", "12+ oz"]
-    size_analysis['Size_Order'] = size_analysis['Size_Group'].apply(lambda x: size_order.index(x) if x in size_order else 999)
-    size_analysis = size_analysis.sort_values('Size_Order')
     
     colors = ['#2ECC71' if x > 0 else '#E74C3C' for x in size_analysis['YoY_%']]
     
@@ -460,9 +434,9 @@ def create_size_performance(data, product_name):
             line=dict(width=2, color='white'),
             opacity=0.7
         ),
-        text=size_analysis['Size_Group'],
+        text=[f"{s} oz" for s in size_analysis['SIZE']],
         textposition='top center',
-        textfont=dict(size=10, color='#2C3E50', family='Arial Black'),
+        textfont=dict(size=9, color='#2C3E50', family='Arial Black'),
         hovertemplate='<b>%{text}</b><br>' +
                       'Velocity: $%{x:.1f}k/TDP<br>' +
                       'YoY Growth: %{y:.1f}%<br>' +
