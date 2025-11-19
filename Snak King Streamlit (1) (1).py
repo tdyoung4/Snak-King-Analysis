@@ -848,7 +848,7 @@ else:
             <h4>Product Attributes:</h4>
             <ul>
                 <li> <b>Package Size:</b> Based on size performance analysis (recommend 8-12 oz)</li>
-                <li> <b>Flavor Profile:</b> Based on flavor opportunity matrix (consider Lime, Spicy, or Sea Salt)</li>
+                <li> <b>Flavor Profile:</b> Based on flavor opportunity matrix (Dorito Cheese Style) </li>
                 <li> <b>Price Point:</b> Mid-Premium positioning ($3.99-$4.99)</li>
                 <li>️ <b>Key Features:</b> Stone-Ground Corn, Non-GMO, Gluten-Free, Restaurant-Style</li>
             </ul>
