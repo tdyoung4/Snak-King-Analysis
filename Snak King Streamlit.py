@@ -245,8 +245,8 @@ def create_flavor_performance(data, product_name):
     # Filter out very small flavors AFTER calculating growth
     flavor_analysis = flavor_analysis[flavor_analysis['Dollars'] > 500000]  # >$500k revenue
     
-    # Convert velocity to thousands (already in $/TDP, just divide by 1000)
-    flavor_analysis['Velocity_Display'] = flavor_analysis['Dollars/TDP'] / 1000
+    # Velocity is already in $/TDP - DO NOT divide by 1000
+    flavor_analysis['Velocity_Display'] = flavor_analysis['Dollars/TDP']
     flavor_analysis['Revenue_M'] = flavor_analysis['Dollars'] / 1_000_000
     
     # Sort by revenue for consistent display
@@ -352,7 +352,7 @@ def create_flavor_performance(data, product_name):
             'xanchor': 'center',
             'font': {'size': 16, 'color': '#2C3E50', 'family': 'Arial Black'}
         },
-        xaxis_title='Velocity (Dollars/TDP in thousands) - How Fast It Sells',
+        xaxis_title='Velocity (Dollars/TDP) - How Fast It Sells',
         yaxis_title='Year-over-Year Growth (%) - Momentum',
         template='plotly_white',
         height=600,
@@ -466,8 +466,28 @@ def create_price_tier_analysis(data, product_name):
 
 # Slide 6: Package Size Performance - FIXED VERSION
 def create_size_performance(data, product_name):
-    # Aggregate by size
-    size_analysis = data.groupby('SIZE').agg({
+    # Create size groups
+    def group_size(size):
+        if pd.isna(size):
+            return 'UNKNOWN'
+        size = float(size)
+        if size < 2:
+            return '<2 oz'
+        elif size <= 5:
+            return '2-5 oz'
+        elif size <= 8:
+            return '5-8 oz'
+        elif size <= 12:
+            return '8-12 oz'
+        else:
+            return '12+ oz'
+    
+    # Add size group column
+    data_copy = data.copy()
+    data_copy['Size_Group'] = data_copy['SIZE'].apply(group_size)
+    
+    # Aggregate by size group
+    size_analysis = data_copy.groupby('Size_Group').agg({
         'Dollars': 'sum',
         'Dollars, Yago': 'sum',
         'Dollars/TDP': 'mean',
@@ -481,7 +501,7 @@ def create_size_performance(data, product_name):
     )
     
     # Calculate distribution percentage
-    total_tdp = data['TDP'].sum()
+    total_tdp = data_copy['TDP'].sum()
     size_analysis['Distribution_%'] = (size_analysis['TDP'] / total_tdp * 100).round(0).astype(int)
     
     # Replace infinity with NaN, then drop NaN
@@ -491,12 +511,16 @@ def create_size_performance(data, product_name):
     # Filter out very small sizes AFTER calculating growth
     size_analysis = size_analysis[size_analysis['Dollars'] > 2000000]  # >$2M revenue
     
-    # Convert velocity to thousands
-    size_analysis['Velocity_Display'] = size_analysis['Dollars/TDP'] / 1000
+    # Velocity is already in $/TDP - DO NOT divide by 1000
+    size_analysis['Velocity_Display'] = size_analysis['Dollars/TDP']
     size_analysis['Revenue_M'] = size_analysis['Dollars'] / 1_000_000
     
-    # Sort by size for better display
-    size_analysis = size_analysis.sort_values('SIZE')
+    # Sort by size group order
+    size_order = ['<2 oz', '2-5 oz', '5-8 oz', '8-12 oz', '12+ oz']
+    size_analysis['Size_Order'] = size_analysis['Size_Group'].apply(
+        lambda x: size_order.index(x) if x in size_order else 999
+    )
+    size_analysis = size_analysis.sort_values('Size_Order')
     
     # Create separate traces for growing vs declining
     growing = size_analysis[size_analysis['YoY_%'] >= 0]
@@ -518,9 +542,9 @@ def create_size_performance(data, product_name):
                 line=dict(width=2, color='white'),
                 opacity=0.7
             ),
-            text=[f"{s} oz" for s in growing['SIZE']],
-            textposition='top center',
-            textfont=dict(size=9, color='#2C3E50', family='Arial Black'),
+            text=growing['Size_Group'],
+            textposition='middle center',
+            textfont=dict(size=11, color='white', family='Arial Black'),
             hovertemplate='<b>%{text}</b><br>' +
                           'Velocity: $%{x:,.0f}/TDP<br>' +
                           'Growth: %{y:.1f}%<br>' +
@@ -528,7 +552,7 @@ def create_size_performance(data, product_name):
                           'Distribution: ' + growing['Distribution_%'].astype(str).values + '% stores<br>' +
                           '<extra></extra>',
             name='Growing',
-            showlegend=False
+            showlegend=True
         ))
     
     # Declining sizes
@@ -545,9 +569,9 @@ def create_size_performance(data, product_name):
                 line=dict(width=2, color='white'),
                 opacity=0.7
             ),
-            text=[f"{s} oz" for s in declining['SIZE']],
-            textposition='top center',
-            textfont=dict(size=9, color='#2C3E50', family='Arial Black'),
+            text=declining['Size_Group'],
+            textposition='middle center',
+            textfont=dict(size=11, color='white', family='Arial Black'),
             hovertemplate='<b>%{text}</b><br>' +
                           'Velocity: $%{x:,.0f}/TDP<br>' +
                           'Growth: %{y:.1f}%<br>' +
@@ -555,7 +579,7 @@ def create_size_performance(data, product_name):
                           'Distribution: ' + declining['Distribution_%'].astype(str).values + '% stores<br>' +
                           '<extra></extra>',
             name='Declining',
-            showlegend=False
+            showlegend=True
         ))
     
     # Add quadrant lines
@@ -577,6 +601,22 @@ def create_size_performance(data, product_name):
             borderpad=5
         )
     
+    # Add legend annotation
+    fig.add_annotation(
+        x=0.98, y=0.02,
+        xref='paper', yref='paper',
+        text='<b>Bubble Size = Revenue</b><br>(Market opportunity)<br><br>🟢 Growing<br>🔴 Declining',
+        showarrow=False,
+        font=dict(size=10),
+        bgcolor='white',
+        bordercolor='black',
+        borderwidth=1,
+        borderpad=10,
+        align='left',
+        xanchor='right',
+        yanchor='bottom'
+    )
+    
     fig.update_layout(
         title={
             'text': f'Package Size Performance Matrix<br><sub>Bubble size = Market size (revenue)</sub>',
@@ -584,7 +624,7 @@ def create_size_performance(data, product_name):
             'xanchor': 'center',
             'font': {'size': 16, 'color': '#2C3E50', 'family': 'Arial Black'}
         },
-        xaxis_title='Velocity ($/TDP in thousands) - How Fast It Sells',
+        xaxis_title='Velocity ($/TDP) - How Fast It Sells',
         yaxis_title='Year-over-Year Growth (%) - Momentum',
         template='plotly_white',
         height=600,
