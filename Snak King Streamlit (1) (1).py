@@ -825,7 +825,6 @@ else:
         st.markdown(f"""
         <div class="product-card">
             <h3>{emoji} Snak King Premium Butter Popcorn</h3>
-            <p style="color: #7f8c8d; font-style: italic;">Positioned as a premium, better-for-you alternative competing with SkinnyPop</p>
             <br>
             <h4>Product Attributes:</h4>
             <ul>
