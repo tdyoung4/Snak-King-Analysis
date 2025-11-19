@@ -4,10 +4,6 @@ import plotly.graph_objects as go
 import plotly.express as px
 import numpy as np
 
-##Header
-st.markdown("<h1 style='color: #3563E9;'>Snak King Sentiment Analysis</h1>", unsafe_allow_html=True)
-st.markdown("Great job on the presentation! Here’s a breakdown of the sentiment analysis for Snak King.")
-
 # Page config
 st.set_page_config(
     page_title="Snak King Product Analyzer",
@@ -719,6 +715,7 @@ page = st.sidebar.radio(
 # HOME PAGE
 if page == " Home":
     # Title
+    st.markdown('<div class="main-header"><h1 style="color: white; margin: 0;"> Snak King Product Opportunity Analyzer</h1><p style="color: white; margin: 10px 0 0 0;">Data-Driven Insights for Product Development</p></div>', unsafe_allow_html=True)
     
     # Single opportunity matrix
     st.plotly_chart(create_opportunity_matrix(df, " - OVERALL MARKET"), use_container_width=True)
