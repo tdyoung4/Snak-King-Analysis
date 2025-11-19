@@ -839,23 +839,6 @@ else:
             <h4>Target Retailer:</h4>
             <p><b>Target</b> - Perfect fit for health-conscious, premium-seeking Target shoppers</p>
             <br>
-            <h4>Why This Works:</h4>
-            <ul>
-                <li> <b>12+ oz size showing 24% growth</b> - highest growth segment in popcorn</li>
-                <li> <b>Butter flavor dominates</b> - proven winner with mass appeal</li>
-                <li> <b>Premium positioning outperforming</b> - data shows premium growing faster than value</li>
-                <li> <b>Target's demographics align</b> - health-conscious, willing to pay for quality</li>
-                <li> <b>Competes with SkinnyPop</b> - established premium popcorn category leader</li>
-                <li> <b>Family size captures share</b> - larger formats have higher velocity at Target</li>
-            </ul>
-            <br>
-            <h4>Go-to-Market Strategy:</h4>
-            <ul>
-                <li> Launch exclusively at Target to build brand prestige</li>
-                <li> Position in "Better-For-You" snack section near SkinnyPop</li>
-                <li> Emphasize simple ingredients and air-popped preparation</li>
-                <li> Premium packaging with clear window to show product quality</li>
-            </ul>
         </div>
         """, unsafe_allow_html=True)
     elif product_name == "Tortilla Chips":
