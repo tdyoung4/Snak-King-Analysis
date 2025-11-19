@@ -4,6 +4,10 @@ import plotly.graph_objects as go
 import plotly.express as px
 import numpy as np
 
+##Header
+st.markdown("<h1 style='color: #3563E9;'>Snak King Sentiment Analysis</h1>", unsafe_allow_html=True)
+st.markdown("Great job on the presentation! Here’s a breakdown of the sentiment analysis for Snak King.")
+
 # Page config
 st.set_page_config(
     page_title="Snak King Product Analyzer",
