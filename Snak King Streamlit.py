@@ -71,8 +71,8 @@ if len(snak_king_data) == 0:
         showlegend=False
     )
     
-    fig.write_html('/mnt/user-data/outputs/top_brands_comparison.html')
-    print(f"\n✅ Saved: top_brands_comparison.html")
+    # Removed write_html - not needed for Streamlit
+    print(f"\n✅ Created: top_brands_comparison chart")
 
 else:
     print(f"\n✅ Found {len(snak_king_data)} Snak King products!")
@@ -119,8 +119,8 @@ else:
         height=500
     )
     
-    fig1.write_html('/mnt/user-data/outputs/snak_king_revenue_by_category.html')
-    print(f"\n✅ Saved: snak_king_revenue_by_category.html")
+    # Removed write_html - not needed for Streamlit
+    print(f"\n✅ Created: snak_king_revenue_by_category chart")
     
     # Graph 2: Growth Rate by Category
     fig2 = go.Figure()
@@ -145,8 +145,8 @@ else:
         height=500
     )
     
-    fig2.write_html('/mnt/user-data/outputs/snak_king_growth_by_category.html')
-    print(f"✅ Saved: snak_king_growth_by_category.html")
+    # Removed write_html - not needed for Streamlit
+    print(f"✅ Created: snak_king_growth_by_category chart")
     
     # Graph 3: Velocity vs Growth Matrix (UPDATED - uniform dot sizes)
     fig3 = go.Figure()
@@ -179,8 +179,8 @@ else:
         height=600
     )
     
-    fig3.write_html('/mnt/user-data/outputs/snak_king_performance_matrix.html')
-    print(f"✅ Saved: snak_king_performance_matrix.html")
+    # Removed write_html - not needed for Streamlit
+    print(f"✅ Created: snak_king_performance_matrix chart")
     
     # Graph 4: Flavor Analysis (if available)
     if 'FLAVOR' in snak_king_data.columns:
@@ -217,8 +217,8 @@ else:
             height=500
         )
         
-        fig4.write_html('/mnt/user-data/outputs/snak_king_flavor_breakdown.html')
-        print(f"\n✅ Saved: snak_king_flavor_breakdown.html")
+        # Removed write_html - not needed for Streamlit
+        print(f"\n✅ Created: snak_king_flavor_breakdown chart")
     
     # Graph 5: Package Size Analysis (if available)
     if 'SIZE' in snak_king_data.columns:
@@ -295,8 +295,8 @@ else:
             showlegend=False
         )
         
-        fig5.write_html('/mnt/user-data/outputs/snak_king_size_analysis.html')
-        print(f"\n✅ Saved: snak_king_size_analysis.html")
+        # Removed write_html - not needed for Streamlit
+        print(f"\n✅ Created: snak_king_size_analysis chart")
     
     # Summary Statistics
     print("\n" + "="*80)
