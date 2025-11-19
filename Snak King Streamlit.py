@@ -549,7 +549,7 @@ df = reclassify_flavors(df)
 st.sidebar.title("🎯 Navigation")
 page = st.sidebar.radio(
     "Select Page:",
-    ["🏠 Home", "🍿 Popcorn", "🌽 Tortilla Chips", "🫘 Chickpea Snacks"]
+    ["🏠 Home", "🍿 Popcorn", "🌽 Tortilla Chips", "Snacks Variety Packs"]
 )
 
 # HOME PAGE
