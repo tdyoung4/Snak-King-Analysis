@@ -119,7 +119,6 @@ else:
         height=500
     )
     
-    fig1.write_html('/mnt/user-data/outputs/snak_king_revenue_by_category.html')
     print(f"\n✅ Saved: snak_king_revenue_by_category.html")
     
     # Graph 2: Growth Rate by Category
