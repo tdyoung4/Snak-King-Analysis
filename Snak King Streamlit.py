@@ -249,6 +249,9 @@ def create_flavor_performance(data, product_name):
     flavor_analysis['Velocity_Display'] = flavor_analysis['Dollars/TDP']
     flavor_analysis['Revenue_M'] = flavor_analysis['Dollars'] / 1_000_000
     
+    # Take top 12 by revenue to avoid outliers
+    flavor_analysis = flavor_analysis.nlargest(12, 'Revenue_M')
+    
     # Sort by revenue for consistent display
     flavor_analysis = flavor_analysis.sort_values('Revenue_M', ascending=False)
     
@@ -510,6 +513,9 @@ def create_size_performance(data, product_name):
     
     # Filter out very small sizes AFTER calculating growth
     size_analysis = size_analysis[size_analysis['Dollars'] > 2000000]  # >$2M revenue
+    
+    # Remove UNKNOWN size group if it exists
+    size_analysis = size_analysis[size_analysis['Size_Group'] != 'UNKNOWN']
     
     # Velocity is already in $/TDP - DO NOT divide by 1000
     size_analysis['Velocity_Display'] = size_analysis['Dollars/TDP']
