@@ -541,16 +541,14 @@ def create_size_performance(data, product_name):
             y=growing['YoY_%'],
             mode='markers+text',
             marker=dict(
-                size=growing['Revenue_M'] * 10,  # Multiply for better visibility
-                sizemode='diameter',
-                sizeref=2,  # Fixed sizeref for consistent scaling
+                size=growing['Revenue_M'],
                 color='#27AE60',
-                line=dict(width=3, color='white'),
-                opacity=0.85
+                line=dict(width=2, color='white'),
+                opacity=0.8
             ),
             text=growing['Size_Group'],
             textposition='middle center',
-            textfont=dict(size=14, color='white', family='Arial Black'),
+            textfont=dict(size=12, color='white', family='Arial Black'),
             hovertemplate='<b>%{text}</b><br>' +
                           'Velocity: $%{x:,.0f}/TDP<br>' +
                           'Growth: %{y:.1f}%<br>' +
@@ -568,16 +566,14 @@ def create_size_performance(data, product_name):
             y=declining['YoY_%'],
             mode='markers+text',
             marker=dict(
-                size=declining['Revenue_M'] * 10,  # Multiply for better visibility
-                sizemode='diameter',
-                sizeref=2,  # Fixed sizeref for consistent scaling
+                size=declining['Revenue_M'],
                 color='#E74C3C',
-                line=dict(width=3, color='white'),
-                opacity=0.85
+                line=dict(width=2, color='white'),
+                opacity=0.8
             ),
             text=declining['Size_Group'],
             textposition='middle center',
-            textfont=dict(size=14, color='white', family='Arial Black'),
+            textfont=dict(size=12, color='white', family='Arial Black'),
             hovertemplate='<b>%{text}</b><br>' +
                           'Velocity: $%{x:,.0f}/TDP<br>' +
                           'Growth: %{y:.1f}%<br>' +
