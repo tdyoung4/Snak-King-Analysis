@@ -1,37 +1,50 @@
+import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 from plotly.subplots import make_subplots
 
-# Load data
-print("Loading data...")
-df = pd.read_excel('Salty Snack Market Data Fall 2025-1 (2).xlsx')
-df = df[df['Product Level'] == 'UPC'].copy()
+# Page config
+st.set_page_config(page_title="Snak King Analysis", page_icon="👑", layout="wide")
 
-print(f"Total records: {len(df)}")
-print(f"\nUnique brands: {df['Brand'].nunique()}")
+# Title
+st.title("👑 Snak King Brand Analysis")
+st.markdown("---")
+
+# Load data with caching
+@st.cache_data
+def load_data():
+    df = pd.read_excel('Salty Snack Market Data Fall 2025-1 (2).xlsx')
+    df = df[df['Product Level'] == 'UPC'].copy()
+    return df
+
+# Load data
+with st.spinner("Loading data..."):
+    df = load_data()
+
+st.success(f"✅ Loaded {len(df):,} records from {df['Brand'].nunique():,} brands")
 
 # Filter for Snak King brand
 snak_king_data = df[df['Brand'].str.contains('SNAK KING', case=False, na=False)].copy()
 
-print(f"\n{'='*80}")
-print(f"SNAK KING ANALYSIS")
-print(f"{'='*80}")
-print(f"Total Snak King products: {len(snak_king_data)}")
+st.markdown("---")
+st.header(f"📊 Snak King Analysis")
 
 if len(snak_king_data) == 0:
-    print("\n⚠️  WARNING: No Snak King products found in dataset!")
-    print("\nSearching for similar brand names...")
+    st.warning("⚠️ No Snak King products found in dataset!")
+    
+    st.subheader("Searching for similar brand names...")
     
     # Search for variations
     similar_brands = df[df['Brand'].str.contains('KING|SNACK', case=False, na=False)]['Brand'].unique()
-    print(f"\nBrands containing 'KING' or 'SNACK': {len(similar_brands)}")
-    for brand in sorted(similar_brands)[:20]:
-        print(f"  - {brand}")
+    st.info(f"Found {len(similar_brands)} brands containing 'KING' or 'SNACK'")
     
-    print("\n" + "="*80)
-    print("ALTERNATIVE ANALYSIS: TOP BRANDS FOR COMPARISON")
-    print("="*80)
+    with st.expander("View similar brands"):
+        for brand in sorted(similar_brands)[:20]:
+            st.write(f"- {brand}")
+    
+    st.markdown("---")
+    st.subheader("📈 Alternative Analysis: Top Brands for Comparison")
     
     # Analyze top brands instead
     brand_summary = df.groupby('Brand').agg({
@@ -47,8 +60,7 @@ if len(snak_king_data) == 0:
                                brand_summary['Dollars, Yago'] * 100)
     brand_summary = brand_summary.sort_values('Revenue_M', ascending=False).head(20)
     
-    print("\nTop 20 Brands by Revenue:")
-    print(brand_summary[['Brand', 'Revenue_M', 'YoY_%', 'Subcategory']].to_string(index=False))
+    st.dataframe(brand_summary[['Brand', 'Revenue_M', 'YoY_%', 'Subcategory']], use_container_width=True)
     
     # Create visualization of top brands
     fig = go.Figure()
@@ -71,16 +83,14 @@ if len(snak_king_data) == 0:
         showlegend=False
     )
     
-    # REMOVED: fig.write_html('/mnt/user-data/outputs/top_brands_comparison.html')
-    print(f"\n✅ Created: top_brands_comparison chart")
+    st.plotly_chart(fig, use_container_width=True)
 
 else:
-    print(f"\n✅ Found {len(snak_king_data)} Snak King products!")
+    st.success(f"✅ Found {len(snak_king_data)} Snak King products!")
     
     # Product breakdown by subcategory
-    print("\n" + "="*80)
-    print("SNAK KING PRODUCT BREAKDOWN")
-    print("="*80)
+    st.markdown("---")
+    st.subheader("📦 Snak King Product Breakdown")
     
     subcategory_breakdown = snak_king_data.groupby('Subcategory').agg({
         'Dollars': 'sum',
@@ -97,10 +107,12 @@ else:
     
     subcategory_breakdown = subcategory_breakdown.sort_values('Revenue_M', ascending=False)
     
-    print("\nSnak King by Category:")
-    print(subcategory_breakdown[['Subcategory', 'Revenue_M', 'YoY_%', 'Velocity_K']].to_string(index=False))
+    st.dataframe(subcategory_breakdown[['Subcategory', 'Revenue_M', 'YoY_%', 'Velocity_K']], use_container_width=True)
     
     # Graph 1: Revenue by Category
+    st.markdown("---")
+    st.subheader("💰 Revenue by Product Category")
+    
     fig1 = go.Figure()
     
     fig1.add_trace(go.Bar(
@@ -119,10 +131,12 @@ else:
         height=500
     )
     
-    # REMOVED: fig1.write_html('/mnt/user-data/outputs/snak_king_revenue_by_category.html')
-    print(f"\n✅ Created: snak_king_revenue_by_category chart")
+    st.plotly_chart(fig1, use_container_width=True)
     
     # Graph 2: Growth Rate by Category
+    st.markdown("---")
+    st.subheader("📈 Year-over-Year Growth by Category")
+    
     fig2 = go.Figure()
     
     colors = ['#2ECC71' if x > 0 else '#E74C3C' for x in subcategory_breakdown['YoY_%']]
@@ -145,10 +159,12 @@ else:
         height=500
     )
     
-    # REMOVED: fig2.write_html('/mnt/user-data/outputs/snak_king_growth_by_category.html')
-    print(f"✅ Created: snak_king_growth_by_category chart")
+    st.plotly_chart(fig2, use_container_width=True)
     
-    # Graph 3: Velocity vs Growth Matrix (UPDATED - uniform dot sizes)
+    # Graph 3: Velocity vs Growth Matrix
+    st.markdown("---")
+    st.subheader("🎯 Performance Matrix: Velocity vs Growth")
+    
     fig3 = go.Figure()
     
     fig3.add_trace(go.Scatter(
@@ -179,14 +195,12 @@ else:
         height=600
     )
     
-    # REMOVED: fig3.write_html('/mnt/user-data/outputs/snak_king_performance_matrix.html')
-    print(f"✅ Created: snak_king_performance_matrix chart")
+    st.plotly_chart(fig3, use_container_width=True)
     
     # Graph 4: Flavor Analysis (if available)
     if 'FLAVOR' in snak_king_data.columns:
-        print("\n" + "="*80)
-        print("SNAK KING FLAVOR ANALYSIS")
-        print("="*80)
+        st.markdown("---")
+        st.subheader("🍿 Flavor Analysis")
         
         flavor_analysis = snak_king_data.groupby('FLAVOR').agg({
             'Dollars': 'sum',
@@ -199,8 +213,7 @@ else:
                                     flavor_analysis['Dollars, Yago'] * 100)
         flavor_analysis = flavor_analysis.sort_values('Revenue_M', ascending=False)
         
-        print("\nTop Flavors:")
-        print(flavor_analysis[['FLAVOR', 'Revenue_M', 'YoY_%']].head(10).to_string(index=False))
+        st.dataframe(flavor_analysis[['FLAVOR', 'Revenue_M', 'YoY_%']].head(10), use_container_width=True)
         
         fig4 = go.Figure()
         
@@ -217,14 +230,12 @@ else:
             height=500
         )
         
-        # REMOVED: fig4.write_html('/mnt/user-data/outputs/snak_king_flavor_breakdown.html')
-        print(f"\n✅ Created: snak_king_flavor_breakdown chart")
+        st.plotly_chart(fig4, use_container_width=True)
     
     # Graph 5: Package Size Analysis (if available)
     if 'SIZE' in snak_king_data.columns:
-        print("\n" + "="*80)
-        print("SNAK KING PACKAGE SIZE ANALYSIS")
-        print("="*80)
+        st.markdown("---")
+        st.subheader("📏 Package Size Analysis")
         
         # Create size groups
         def group_size(size):
@@ -261,8 +272,7 @@ else:
         )
         size_analysis = size_analysis.sort_values('Size_Order')
         
-        print("\nBy Package Size:")
-        print(size_analysis[['Size_Group', 'Revenue_M', 'YoY_%']].to_string(index=False))
+        st.dataframe(size_analysis[['Size_Group', 'Revenue_M', 'YoY_%']], use_container_width=True)
         
         fig5 = make_subplots(
             rows=1, cols=2,
@@ -276,10 +286,10 @@ else:
             row=1, col=1
         )
         
-        colors = ['#2ECC71' if x > 0 else '#E74C3C' for x in size_analysis['YoY_%']]
+        colors_size = ['#2ECC71' if x > 0 else '#E74C3C' for x in size_analysis['YoY_%']]
         fig5.add_trace(
             go.Bar(x=size_analysis['Size_Group'], y=size_analysis['YoY_%'], 
-                   marker_color=colors, name='Growth'),
+                   marker_color=colors_size, name='Growth'),
             row=1, col=2
         )
         
@@ -295,13 +305,11 @@ else:
             showlegend=False
         )
         
-        # REMOVED: fig5.write_html('/mnt/user-data/outputs/snak_king_size_analysis.html')
-        print(f"\n✅ Created: snak_king_size_analysis chart")
+        st.plotly_chart(fig5, use_container_width=True)
     
     # Summary Statistics
-    print("\n" + "="*80)
-    print("SNAK KING SUMMARY STATISTICS")
-    print("="*80)
+    st.markdown("---")
+    st.subheader("📊 Summary Statistics")
     
     total_revenue = snak_king_data['Dollars'].sum() / 1_000_000
     total_revenue_yago = snak_king_data['Dollars, Yago'].sum() / 1_000_000
@@ -309,14 +317,19 @@ else:
     avg_velocity = snak_king_data['Dollars/TDP'].mean() / 1000
     total_tdp = snak_king_data['TDP'].sum()
     
-    print(f"\nTotal Revenue: ${total_revenue:.2f}M")
-    print(f"Previous Year: ${total_revenue_yago:.2f}M")
-    print(f"YoY Growth: {total_growth:+.1f}%")
-    print(f"Average Velocity: ${avg_velocity:.1f}k/TDP")
-    print(f"Total Distribution Points: {total_tdp:,.0f}")
-    print(f"Number of Products: {len(snak_king_data)}")
-    print(f"Categories Present: {snak_king_data['Subcategory'].nunique()}")
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.metric("Total Revenue", f"${total_revenue:.2f}M", f"{total_growth:+.1f}%")
+        st.metric("Previous Year", f"${total_revenue_yago:.2f}M")
+    
+    with col2:
+        st.metric("Average Velocity", f"${avg_velocity:.1f}k/TDP")
+        st.metric("Total Distribution Points", f"{total_tdp:,.0f}")
+    
+    with col3:
+        st.metric("Number of Products", f"{len(snak_king_data)}")
+        st.metric("Categories Present", f"{snak_king_data['Subcategory'].nunique()}")
 
-print("\n" + "="*80)
-print("ANALYSIS COMPLETE!")
-print("="*80)
+st.markdown("---")
+st.success("✅ Analysis Complete!")
